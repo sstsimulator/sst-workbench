@@ -19,6 +19,7 @@ SetupEnvDialog::SetupEnvDialog(QString GroupName, QWidget *parent) :
     QString LabelText;
 
     ui->setupUi(this);
+    setWindowTitle("Setup Environment Variables");
 
     // Build the text to put on the main label
     m_GroupName = GroupName;

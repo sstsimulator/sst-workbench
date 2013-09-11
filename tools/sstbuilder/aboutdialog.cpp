@@ -17,6 +17,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+    setWindowTitle("About SSTBuilder");
 }
 
 AboutDialog::~AboutDialog()

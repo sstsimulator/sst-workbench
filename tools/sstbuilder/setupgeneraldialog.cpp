@@ -31,6 +31,7 @@ SetupGeneralDialog::SetupGeneralDialog(QWidget *parent) :
 
     // Setup the UI
     ui->setupUi(this);
+    setWindowTitle("General Setup");
 
     // Tell the tab what layout to use
     ui->TabEnv->setLayout(ui->verticalLayout_2);
