@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/ComponentMemory.png</file>
+        <file>images/ComponentNetwork.png</file>
+        <file>images/ComponentProcessor.png</file>
+        <file>images/ComponentSystem.png</file>
+        <file>images/ComponentUncategorized.png</file>
+        <file>images/PointerLine.png</file>
+        <file>images/PointerSelectMove.png</file>
+        <file>images/PointerText.png</file>
+        <file>images/TextBold.png</file>
+        <file>images/TextItalic.png</file>
+        <file>images/TextUnderline.png</file>
+        <file>images/ItemDelete.png</file>
+        <file>images/ItemFloodfill.png</file>
+        <file>images/ItemBringToFront.png</file>
+        <file>images/ItemSendToBack.png</file>
+        <file>images/LineColor.png</file>
+        <file>images/ComponentSSTConfig.png</file>
+        <file>images/Sandia_Icon.png</file>
+        <file>images/SSTLogo.png</file>
+        <file>images/ProjectOpen.png</file>
+        <file>images/ProjectSave.png</file>
+        <file>images/ImportXML.png</file>
+        <file>images/ZoomAll.png</file>
+        <file>images/ZoomIn.png</file>
+        <file>images/ZoomOut.png</file>
+        <file>images/Undo.png</file>
+        <file>images/Redo.png</file>
+        <file>images/SST_Single_S_Logo.png</file>
+    </qresource>
+</RCC>
