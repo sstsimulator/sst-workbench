@@ -1138,3 +1138,8 @@ void GraphicItemComponent::PropertyChanged(QString& PropName, QString& NewPropVa
     emit ItemComponentSetProjectDirty();
 }
 
+void GraphicItemComponent::DynamicPropertiesChanged(ItemProperties* ptrExistingProperties)
+{
+    emit ItemComponentRefreshPropertiesWindow(ptrExistingProperties);
+}
+

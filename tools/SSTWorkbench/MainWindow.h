@@ -103,7 +103,8 @@ private slots:
     void HandleSceneEventGraphicItemSelected(QGraphicsItem*);
     void HandleSceneEventGraphicItemSelectedProperties(ItemProperties*);
     void HandleSceneEventSetProjectDirty();
-    void HandleSceneEventRefreshPropertiesWindow(QString, QString);
+    void HandleSceneEventRefreshPropertiesWindowProperty(QString, QString);
+    void HandleSceneEventRefreshPropertiesWindow(ItemProperties*);
     void HandleSceneEventDragAndDropFinished();
     void HandleUndoStackCleanChanged(bool NewState);
 

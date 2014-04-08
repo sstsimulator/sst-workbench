@@ -101,7 +101,8 @@ signals:
     void SceneEventGraphicItemSelectedProperties(ItemProperties* Properties);
     void SceneEventGraphicItemMoved(GraphicItemBase* Item);
     void SceneEventSetProjectDirty();
-    void SceneEventRefreshPropertiesWindow(QString, QString);
+    void SceneEventRefreshPropertiesWindowProperty(QString, QString);
+    void SceneEventRefreshPropertiesWindow(ItemProperties*);
     void SceneEventDragAndDropFinished();
 
 private:

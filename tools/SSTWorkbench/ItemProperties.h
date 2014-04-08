@@ -28,7 +28,7 @@ public:
     enum RO_FLAG { READWRITE, READONLY };
 
     // Constructor / Destructor
-    ItemProperty(ItemProperties* ParentItemProperties, QString PropertyName, QString PropertyValue = "", QString PropertyDesc = "", bool ReadOnly = false, bool Exportable = true);
+    ItemProperty(ItemProperties* ParentItemProperties, QString PropertyName, QString OrigPropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, bool DynamicFlag, QString ControllingParam);
     ItemProperty(ItemProperties* ParentItemProperties, QDataStream& DataStreamIn);  // Only used for serialization
 
     ~ItemProperty();
@@ -53,15 +53,28 @@ public:
     void SetExportable(bool flag) {m_Exportable = flag;}
     bool GetExportable() {return m_Exportable;}
 
+    // Dynamic Parameter Settings
+    bool GetDynamicFlag() {return m_DynamicFlag;}
+    QString GetDefaultValue() {return m_DefaultValue;}
+    QString GetOriginalPropertyName() {return m_OriginalPropertyName;}
+    QString GetControllingProperty() {return m_ControllingProperty;}
+    void SetNumInstances(int NumInstances) {m_NumInstances = NumInstances;}
+    int GetNumInstances() {return m_NumInstances;}
+
     // Save the Property Data (Used for serialization)
     void SaveData(QDataStream& DataStreamOut);
 
 private:
     QString          m_PropertyName;
+    QString          m_OriginalPropertyName;
     QString          m_PropertyValue;
+    QString          m_DefaultValue;
     QString          m_PropertyDesc;
     bool             m_ReadOnly;
     bool             m_Exportable;
+    bool             m_DynamicFlag;
+    QString          m_ControllingProperty;
+    int              m_NumInstances;
     ItemProperties*  m_ParentProperties;
 };
 
@@ -99,6 +112,14 @@ public:
     // Serialization
     void SaveData(QDataStream& DataStreamOut);
     void LoadData(QDataStream& DataStreamIn);
+
+    // Called only when a property changed
+    void PropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback);
+
+private:
+    void AdjustDynamicPropertyInList(QString PropertyName, int NumInstances, bool PerformCallback);
+    void AddStaticProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable);
+    void AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, QString ControllingParam);
 
 private:
     QList<ItemProperty*> m_PropertyList;

@@ -296,7 +296,8 @@ void WiringScene::AddNewComponentItemToScene(GraphicItemComponent* NewComponentI
     emit SceneEventGraphicItemSelectedProperties(NewComponentItem->GetItemProperties());
 
     connect(NewComponentItem, SIGNAL(ItemComponentSetProjectDirty()), this, SIGNAL(SceneEventSetProjectDirty()));
-    connect(NewComponentItem, SIGNAL(ItemComponentRefreshPropertiesWindow(QString, QString)), this, SIGNAL(SceneEventRefreshPropertiesWindow(QString, QString)));
+    connect(NewComponentItem, SIGNAL(ItemComponentRefreshPropertiesWindowProperty(QString, QString)), this, SIGNAL(SceneEventRefreshPropertiesWindowProperty(QString, QString)));
+    connect(NewComponentItem, SIGNAL(ItemComponentRefreshPropertiesWindow(ItemProperties*)), this, SIGNAL(SceneEventRefreshPropertiesWindow(ItemProperties*)));
 
     // Tell the Main Window we added this Component
     emit SceneEventComponentAdded(NewComponentItem);

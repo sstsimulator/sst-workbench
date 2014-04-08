@@ -65,3 +65,11 @@ void GraphicItemBase::PropertyChanged(QString& PropName, QString& NewPropValue)
     Q_UNUSED(PropName)
     Q_UNUSED(NewPropValue)
 }
+
+void GraphicItemBase::DynamicPropertiesChanged(ItemProperties* ptrExistingProperties)
+{
+    // This is a virtual function that the derived class should implement if
+    // it wants to receive notification of a dynamic property change.  The function
+    // will be directly called by the ItemProperty class
+    Q_UNUSED(ptrExistingProperties)
+}

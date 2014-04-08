@@ -17,6 +17,7 @@
 #include "GlobalIncludes.h"
 
 #include "ItemProperties.h"
+#include "DialogParametersConfig.h"
 
 ////////////////////////////////////////////////////////////
 
@@ -29,23 +30,26 @@ public:
     explicit WindowItemProperties(QWidget* parent = 0);
     ~WindowItemProperties();
 
-    void AddPropertyData(QString Property, QString Value, QString Desc, bool ReadOnly = false);
-
     void SetGraphicItemProperties(ItemProperties* Properties);
     void ClearProperiesWindow();
-    void RefreshProperiesWindow(QString PropertyName, QString NewPropertyValue);
+    void RefreshProperiesWindowProperty(QString PropertyName, QString NewPropertyValue);
+
+private:
+    void AddPropertyData(QString Property, QString Value, QString Desc, bool ReadOnly = false);
 
 public slots:
     void HandleCellChanged(int, int);
+    void HandleItemDoubleClicked(QTableWidgetItem* Item);
 
 signals:
 
 private:
-    QGroupBox*      m_PropertiesGroupBox;
-    QTableWidget*   m_PropertiesTable;
+    QGroupBox*              m_PropertiesGroupBox;
+    QTableWidget*           m_PropertiesTable;
 
-    ItemProperties* m_CurrentProperties;
-    bool            m_PopulatingWindow;
+    ItemProperties*         m_CurrentProperties;
+    bool                    m_PopulatingWindow;
+    DialogParametersConfig* m_ConfigureDynamicParameter;
 };
 
 #endif // WINDOWITEMPROPERTIES_H

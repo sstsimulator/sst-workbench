@@ -41,6 +41,11 @@ public:
     // if it wants to receive notification of changes to a property
     virtual void PropertyChanged(QString& PropName, QString& NewPropValue);
 
+    // Properties Callback: Derived class should implement this function
+    // if it wants to be notified that dynamic properties have changed and should
+    // be refreshed
+    virtual void DynamicPropertiesChanged(ItemProperties* ptrExistingProperties);
+
     // Required Virtual Function to save Item Data
     virtual void SaveData(QDataStream& DataStreamOut) = 0;
 

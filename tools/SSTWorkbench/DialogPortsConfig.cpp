@@ -166,7 +166,7 @@ void DialogPortsConfig::SavePortData()
         ControllingParam = PortInfo->GetDynamicPortContollingParameterName();
         if (ControllingParam.isEmpty() == false) {
             m_SelectedComponent->GetItemProperties()->GetProperty(ControllingParam)->SetValue(NumInstancesStr, false);
-            emit m_SelectedComponent->ItemComponentRefreshPropertiesWindow(ControllingParam, NumInstancesStr);
+            emit m_SelectedComponent->ItemComponentRefreshPropertiesWindowProperty(ControllingParam, NumInstancesStr);
         }
     }
 }

@@ -53,17 +53,18 @@ MainWindow::MainWindow(QWidget* parent /*=0*/)
     SetMainTabTitle(UNTITLED);
 
     // Connect Scene Event Signals to Main Window Handlers
-    connect(m_WiringScene, SIGNAL(SceneEventComponentAdded(GraphicItemComponent*)),          this, SLOT(HandleSceneEventComponentAdded(GraphicItemComponent*)));
-    connect(m_WiringScene, SIGNAL(SceneEventTextAdded(GraphicItemText*)),                    this, SLOT(HandleSceneEventTextAdded(GraphicItemText*)));
-    connect(m_WiringScene, SIGNAL(SceneEventWireAddedInitialPlacement(GraphicItemWire*)),    this, SLOT(HandleSceneEventWireAddedInitialPlacement(GraphicItemWire*)));
-    connect(m_WiringScene, SIGNAL(SceneEventWireAddedFinalPlacement(GraphicItemWire*)),      this, SLOT(HandleSceneEventWireAddedFinalPlacement(GraphicItemWire*)));
-    connect(m_WiringScene, SIGNAL(selectionChanged()),                                       this, SLOT(HandleSceneEventSelectionChanged()));
-    connect(m_WiringScene, SIGNAL(SceneEventGraphicItemSelected(QGraphicsItem*)),            this, SLOT(HandleSceneEventGraphicItemSelected(QGraphicsItem*)));
-    connect(m_WiringScene, SIGNAL(SceneEventGraphicItemSelectedProperties(ItemProperties*)), this, SLOT(HandleSceneEventGraphicItemSelectedProperties(ItemProperties*)));
-    connect(m_WiringScene, SIGNAL(SceneEventSetProjectDirty()),                              this, SLOT(HandleSceneEventSetProjectDirty()));
-    connect(m_WiringScene, SIGNAL(SceneEventRefreshPropertiesWindow(QString, QString)),      this, SLOT(HandleSceneEventRefreshPropertiesWindow(QString, QString)));
-    connect(m_WiringScene, SIGNAL(SceneEventDragAndDropFinished()),                          this, SLOT(HandleSceneEventDragAndDropFinished()));
-    connect(m_UndoStack, SIGNAL(cleanChanged(bool)),                                         this, SLOT(HandleUndoStackCleanChanged(bool)));
+    connect(m_WiringScene, SIGNAL(SceneEventComponentAdded(GraphicItemComponent*)),             this, SLOT(HandleSceneEventComponentAdded(GraphicItemComponent*)));
+    connect(m_WiringScene, SIGNAL(SceneEventTextAdded(GraphicItemText*)),                       this, SLOT(HandleSceneEventTextAdded(GraphicItemText*)));
+    connect(m_WiringScene, SIGNAL(SceneEventWireAddedInitialPlacement(GraphicItemWire*)),       this, SLOT(HandleSceneEventWireAddedInitialPlacement(GraphicItemWire*)));
+    connect(m_WiringScene, SIGNAL(SceneEventWireAddedFinalPlacement(GraphicItemWire*)),         this, SLOT(HandleSceneEventWireAddedFinalPlacement(GraphicItemWire*)));
+    connect(m_WiringScene, SIGNAL(selectionChanged()),                                          this, SLOT(HandleSceneEventSelectionChanged()));
+    connect(m_WiringScene, SIGNAL(SceneEventGraphicItemSelected(QGraphicsItem*)),               this, SLOT(HandleSceneEventGraphicItemSelected(QGraphicsItem*)));
+    connect(m_WiringScene, SIGNAL(SceneEventGraphicItemSelectedProperties(ItemProperties*)),    this, SLOT(HandleSceneEventGraphicItemSelectedProperties(ItemProperties*)));
+    connect(m_WiringScene, SIGNAL(SceneEventSetProjectDirty()),                                 this, SLOT(HandleSceneEventSetProjectDirty()));
+    connect(m_WiringScene, SIGNAL(SceneEventRefreshPropertiesWindowProperty(QString, QString)), this, SLOT(HandleSceneEventRefreshPropertiesWindowProperty(QString, QString)));
+    connect(m_WiringScene, SIGNAL(SceneEventRefreshPropertiesWindow(ItemProperties*)),    this, SLOT(HandleSceneEventRefreshPropertiesWindow(ItemProperties*)));
+    connect(m_WiringScene, SIGNAL(SceneEventDragAndDropFinished()),                             this, SLOT(HandleSceneEventDragAndDropFinished()));
+    connect(m_UndoStack,   SIGNAL(cleanChanged(bool)),                                          this, SLOT(HandleUndoStackCleanChanged(bool)));
 
     // Create the Components Right Side Window
     m_CompToolBox = new WindowComponentToolBox(this);
@@ -1076,13 +1077,22 @@ void MainWindow::HandleSceneEventSetProjectDirty()
     SetProjectDirty();
 }
 
-void MainWindow::HandleSceneEventRefreshPropertiesWindow(QString PropertyName, QString NewPropertyValue)
+void MainWindow::HandleSceneEventRefreshPropertiesWindowProperty(QString PropertyName, QString NewPropertyValue)
 {
     // Disable Moving Ports
     EnableMovingPorts(false);
 
     // Refresh the Properties in the properties window
-    m_PropWin->RefreshProperiesWindow(PropertyName, NewPropertyValue);
+    m_PropWin->RefreshProperiesWindowProperty(PropertyName, NewPropertyValue);
+}
+
+void MainWindow::HandleSceneEventRefreshPropertiesWindow(ItemProperties* Properties)
+{
+    // Disable Moving Ports
+    EnableMovingPorts(false);
+
+    // Refresh all the Properties in the properties window
+    m_PropWin->SetGraphicItemProperties(Properties);
 }
 
 void MainWindow::HandleSceneEventDragAndDropFinished()

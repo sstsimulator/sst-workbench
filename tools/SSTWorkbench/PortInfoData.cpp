@@ -57,7 +57,7 @@ void PortInfoData::DetirminePortStaticOrDynamic()
         return;
     }
 
-    // If we get here, then this is a Dynamic Port, but we still have to figure a few things out
+    // If we get here, then this is a Dynamic Port, but we still have to figure a few things out.
     // Search The Port Name for a "%d" that will indicate that it is a Dynamic Port with no
     // Associated parameter
     if (m_SSTInfoPortName.contains("%d") == true) {
@@ -73,7 +73,7 @@ void PortInfoData::DetirminePortStaticOrDynamic()
     Index1 = m_SSTInfoPortName.indexOf("%(", 0);
     Index2 = m_SSTInfoPortName.indexOf(")d", Index1);
     // Make sure we found both items
-    if ((Index1 >= 0) && (Index2 > - 0)) {
+    if ((Index1 >= 0) && (Index2 > Index1)) {
         // Extract the Parameter Name
         ParamName = m_SSTInfoPortName.mid(Index1 + 2, Index2 - Index1 - 2);
         m_DynamicPortControllingParameterName = ParamName;

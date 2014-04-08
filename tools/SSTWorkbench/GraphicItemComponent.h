@@ -76,7 +76,8 @@ public:
 
 signals:
     void ItemComponentSetProjectDirty();
-    void ItemComponentRefreshPropertiesWindow(QString, QString);
+    void ItemComponentRefreshPropertiesWindowProperty(QString, QString);
+    void ItemComponentRefreshPropertiesWindow(ItemProperties*);
 
 private slots:
     void HandleItemPortModedPosition(GraphicItemPort* Port);
@@ -104,6 +105,7 @@ private:
 
     // Handle a property change
     void PropertyChanged(QString& PropName, QString& NewPropValue);
+    void DynamicPropertiesChanged(ItemProperties* ptrExistingProperties);
 
 private:
     SSTInfoDataComponent::ComponentType m_ComponentType;

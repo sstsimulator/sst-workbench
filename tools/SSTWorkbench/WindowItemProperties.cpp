@@ -56,6 +56,7 @@ WindowItemProperties::WindowItemProperties(QWidget* parent /*=0*/)
 
     // Handle when an Item changes
     connect(m_PropertiesTable, SIGNAL(cellChanged(int, int)), this, SLOT(HandleCellChanged(int, int)));
+    connect(m_PropertiesTable, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(HandleItemDoubleClicked(QTableWidgetItem*)));
 
     //setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Ignored));
     setMinimumWidth(m_PropertiesTable->sizeHint().width());
@@ -126,8 +127,8 @@ void WindowItemProperties::SetGraphicItemProperties(ItemProperties* Properties)
 void WindowItemProperties::ClearProperiesWindow()
 {
     // Set the row count to 0, and remove the graphic display of properties
-    m_PropertiesTable->setRowCount(0);
     m_PropertiesTable->clearContents();
+    m_PropertiesTable->setRowCount(0);
     m_CurrentProperties = NULL;
 
     // Set the Headers to show the Columns
@@ -135,7 +136,7 @@ void WindowItemProperties::ClearProperiesWindow()
     m_PropertiesTable->horizontalHeader()->setStretchLastSection(true);
 }
 
-void WindowItemProperties::RefreshProperiesWindow(QString PropertyName, QString NewPropertyValue)
+void WindowItemProperties::RefreshProperiesWindowProperty(QString PropertyName, QString NewPropertyValue)
 {
     int               RowCount;
     int               row;
@@ -180,5 +181,31 @@ void WindowItemProperties::HandleCellChanged(int row, int col)
             }
         }
     }
+}
 
+void WindowItemProperties::HandleItemDoubleClicked(QTableWidgetItem* Item)
+{
+    QString           PropName;
+    ItemProperty*     Property;
+    QString           ControllingParam;
+    QString           OrigPropertyName;
+
+    // Make sure this is a Dynamic Property
+    PropName = Item->text();
+    Property = m_CurrentProperties->GetProperty(PropName);
+    if ((Item->column() == 0)  && (Property != NULL)) {
+        if (Property->GetDynamicFlag() == true) {
+            ControllingParam = Property->GetControllingProperty();
+            OrigPropertyName = Property->GetOriginalPropertyName();
+
+            qDebug() << "Property " << PropName << "is Dynamic and Control Param = " << ControllingParam;
+            m_ConfigureDynamicParameter = new DialogParametersConfig();
+
+            // Run the dialog box (Modal)
+            m_ConfigureDynamicParameter->exec();
+
+            // Delete the Dialog
+            delete m_ConfigureDynamicParameter;
+        }
+    }
 }

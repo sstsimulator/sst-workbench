@@ -62,6 +62,7 @@ SOURCES += \
     Main.cpp \
     MainWindow.cpp \
     DialogPortsConfig.cpp \
+    DialogParametersConfig.cpp \
     DialogExportDisplayStatus.cpp \
     DialogPreferences.cpp \
     WiringScene.cpp \
@@ -87,6 +88,7 @@ HEADERS += \
     GlobalIncludes.h \
     MainWindow.h \
     DialogPortsConfig.h \
+    DialogParametersConfig.h \
     DialogExportDisplayStatus.h \
     DialogPreferences.h \
     WiringScene.h \
@@ -113,7 +115,8 @@ RESOURCES += \
 FORMS += \
     DialogPortsConfig.ui \
     DialogExportDisplayStatus.ui \
-    DialogPreferences.ui
+    DialogPreferences.ui \
+    DialogParametersConfig.ui
 
 OTHER_FILES += \
     build_linux_release.sh \
