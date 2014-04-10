@@ -190,16 +190,15 @@ void WindowItemProperties::HandleItemDoubleClicked(QTableWidgetItem* Item)
     QString           ControllingParam;
     QString           OrigPropertyName;
 
-    // Make sure this is a Dynamic Property
+    // Make sure this is a Dynamic Property & has no controlling parameter
     PropName = Item->text();
     Property = m_CurrentProperties->GetProperty(PropName);
     if ((Item->column() == 0)  && (Property != NULL)) {
-        if (Property->GetDynamicFlag() == true) {
+        if ((Property->GetDynamicFlag() == true) && (Property->GetControllingProperty().isEmpty())) {
             ControllingParam = Property->GetControllingProperty();
             OrigPropertyName = Property->GetOriginalPropertyName();
 
-            qDebug() << "Property " << PropName << "is Dynamic and Control Param = " << ControllingParam;
-            m_ConfigureDynamicParameter = new DialogParametersConfig();
+            m_ConfigureDynamicParameter = new DialogParametersConfig(Property);
 
             // Run the dialog box (Modal)
             m_ConfigureDynamicParameter->exec();

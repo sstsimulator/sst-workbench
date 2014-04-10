@@ -29,11 +29,28 @@ class DialogParametersConfig : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogParametersConfig(QWidget *parent = 0);
+    explicit DialogParametersConfig(ItemProperty* SelectedProperty, QWidget *parent = 0);
     ~DialogParametersConfig();
 
+signals:
+
 private:
-    Ui::DialogParametersConfig *ui;
+    // Table Management
+    void SetupTable();
+    void PopulateParameterData();
+    void AddParameterDataEntry(QString Name, QString Value);
+    // Save the Changes back to the Parameter
+    void SaveParameterData();
+
+private slots:
+    // Handlers for Messages from the UI Controls
+    void on_CloseBtn_clicked();
+    void keyPressEvent(QKeyEvent* evt);
+
+private:
+    Ui::DialogParametersConfig* ui;
+    SpinBoxEditor*              m_SpinBoxEditor;
+    ItemProperty*               m_SelectedProperty;
 };
 
 #endif // DIALOGPARAMETERSCONFIG_H

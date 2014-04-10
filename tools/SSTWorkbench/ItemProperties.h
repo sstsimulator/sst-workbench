@@ -33,6 +33,9 @@ public:
 
     ~ItemProperty();
 
+    // Parent Properties
+    ItemProperties* GetParentProperties() {return m_ParentProperties;}
+
     // Property Name
     void SetName(QString NewName) {m_PropertyName = NewName;}
     QString GetName() {return m_PropertyName;}
@@ -115,9 +118,9 @@ public:
 
     // Called only when a property changed
     void PropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback);
+    void AdjustDynamicPropertyInList(QString PropertyName, int NumInstances, bool PerformCallback);
 
 private:
-    void AdjustDynamicPropertyInList(QString PropertyName, int NumInstances, bool PerformCallback);
     void AddStaticProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable);
     void AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, QString ControllingParam);
 

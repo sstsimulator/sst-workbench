@@ -122,11 +122,18 @@
 #define CONFIGPORTDLG_COMPONENTTITLE            "Setup Dynamic Ports for Component:\n"
 #define CONFIGPORTDLG_MAX_NUM_DYNAMIC_PORTS     100
 #define CONFIGPORTDLG_HEADER_INDEX              "Index"
-#define CONFIGPORTDLG_HEADER_INDEX              "Index"
 #define CONFIGPORTDLG_HEADER_DYN_PORT_NAME      "Dynamic Port Name"
 #define CONFIGPORTDLG_HEADER_SET_NUM_PORTS      "Set Number of Ports"
 #define CONFIGPORTDLG_HEADER_0_WIDTH            50
 #define CONFIGPORTDLG_HEADER_1_WIDTH            200
+
+// Parameter Config Dialog Settings
+#define CONFIGPARAMDLG_DLGTITLE                 "Set Component Dynamic Parameter"
+#define CONFIGPARAMDLG_COMPONENTTITLE           "Setup Dynamic Parameter"
+#define CONFIGPARAMDLG_MAX_NUM_DYNAMIC_PARAMS   100
+#define CONFIGPARAMDLG_HEADER_DYN_PARAM_NAME     "Dynamic Parameter Name"
+#define CONFIGPARAMDLG_HEADER_SET_NUM_PARAMS    "Set Number of Parameters"
+#define CONFIGPARAMDLG_HEADER_0_WIDTH           200
 
 // Port Info Data Settings
 #define PORTINFO_UNCONFIGURED                   "UNCONFIGURED - "

@@ -1061,6 +1061,7 @@ QVariant GraphicItemComponent::itemChange(GraphicsItemChange change, const QVari
 
 void GraphicItemComponent::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget /*=0*/)
 {
+//    qDebug() << "Component Paint";
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
