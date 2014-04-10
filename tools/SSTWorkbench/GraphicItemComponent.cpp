@@ -527,7 +527,7 @@ void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
     bool                        UpdateVisualLayout = false;
     PortInfoData::ComponentSide CurrentPortSide;
     int                         CurrentPortSideSequence;
-    int                         NewPortSideSequence;
+    int                         NewPortSideSequence = 0;
 
     if (m_MovingPortsMode == true) {
 

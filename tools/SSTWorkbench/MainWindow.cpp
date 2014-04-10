@@ -1989,7 +1989,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::keyPressEvent(QKeyEvent* ev)
 {
-    if (ev->key() == Qt::Key_Escape == true) {
+    if (ev->key() == Qt::Key_Escape) {
         // Make sure a Component is moving ports
         // Then disable the Component to move ports
         EnableMovingPorts(false);

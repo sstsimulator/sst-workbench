@@ -644,7 +644,7 @@ void WiringScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
 {
     QList<QGraphicsItem*> PointItems;
     OperationMode         CurrentOperationMode;
-    QGraphicsItem*        SelectedItem;
+    QGraphicsItem*        SelectedItem = NULL;
 
     // Check to ensure its a right or left buttons
     if ((mouseEvent->button() != Qt::RightButton) && (mouseEvent->button() != Qt::LeftButton))
@@ -700,6 +700,8 @@ void WiringScene::mousePressEvent(QGraphicsSceneMouseEvent* mouseEvent)
 
             // See if anything was in the list of items
             if (PointItems.count() > 0) {
+                // Init SelectedItem
+                SelectedItem = PointItems.first();
 
                 // Look through the list of items, and pick the first one that is a GraphicItemXXX type
                 for (int x = 0; x < PointItems.count(); x++) {
