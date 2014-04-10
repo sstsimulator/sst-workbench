@@ -262,16 +262,21 @@ void ItemProperties::LoadData(QDataStream& DataStreamIn)
 
 void ItemProperties::PropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback)
 {
+    // This property has changed, tell the Graphical Item if the PerformCallback is true
+    if (PerformCallback == true) {
+        GetParentGraphicItemBase()->PropertyChanged(PropName, PropNewValue);
+    }
+
+    CheckIfDynamicPropertyChanged(PropName, PropNewValue, PerformCallback);
+}
+
+void ItemProperties::CheckIfDynamicPropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback)
+{
     int           x;
     ItemProperty* Property;
     int           NumNewInstances;
     QStringList   ProcessedPropertyNamesList;
     QString       PropertyOriginalName;
-
-    // This property has changed, tell the Graphical Item if the PerformCallback is true
-    if (PerformCallback == true) {
-        GetParentGraphicItemBase()->PropertyChanged(PropName, PropNewValue);
-    }
 
     // Now check to see if this parameter is a controlling parameter for any dynamic parameters
     for (x = 0; x < m_PropertyList.count(); x++) {

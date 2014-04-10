@@ -1061,7 +1061,6 @@ QVariant GraphicItemComponent::itemChange(GraphicsItemChange change, const QVari
 
 void GraphicItemComponent::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget /*=0*/)
 {
-//    qDebug() << "Component Paint";
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
@@ -1119,7 +1118,7 @@ void GraphicItemComponent::PropertyChanged(QString& PropName, QString& NewPropVa
     }
 
     // Get the Number of PortInfo's
-    NumPortInfo   = m_PortInfoDataArray.count();
+    NumPortInfo = m_PortInfoDataArray.count();
 
     // Walk through all PortInfo's to see if its controlling parameter matches this Property name
     for (x = 0; x < NumPortInfo; x++) {

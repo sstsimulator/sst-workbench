@@ -118,6 +118,7 @@ public:
 
     // Called only when a property changed
     void PropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback);
+    void CheckIfDynamicPropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback);
     void AdjustDynamicPropertyInList(QString PropertyName, int NumInstances, bool PerformCallback);
 
 private:

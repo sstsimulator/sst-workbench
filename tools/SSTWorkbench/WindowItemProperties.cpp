@@ -177,7 +177,10 @@ void WindowItemProperties::HandleCellChanged(int row, int col)
             // Now Figure out which Property it is
             ItemProperty* ptrPropertyData = m_CurrentProperties->GetProperty(Prop);
             if (ptrPropertyData != NULL) {
-                ptrPropertyData->SetValue(NewValue, !m_PopulatingWindow);
+                if (m_PopulatingWindow == false) {
+                    //qDebug() << "WindowItemProperties::HandleCellChanged() --- UPDATING VALUE: Prop = " << Prop << " New Value = " << NewValue;
+                    ptrPropertyData->SetValue(NewValue, !m_PopulatingWindow);
+                }
             }
         }
     }
