@@ -21,6 +21,7 @@ DialogPreferences::DialogPreferences(QWidget *parent) :
     ui(new Ui::DialogPreferences)
 {
     ui->setupUi(this);
+    setWindowTitle("Preferences");
 }
 
 DialogPreferences::~DialogPreferences()
