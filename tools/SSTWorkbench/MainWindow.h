@@ -244,8 +244,7 @@ private:
     QSettings*              m_PersistentSettings;
 
     // SSTInfo XML Data File Data (SSTInfo XML Import file)
-    QString                 m_SSTInfoXMLDataFilePath;
-    QString                 m_SSTInfoXMLDataFileName;
+    QString                 m_SSTInfoXMLDataFilePathName;
 
     // Project File Data (Project Open/Save file)
     QString                 m_LastSavedProjectDataFilePathName;

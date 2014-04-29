@@ -288,7 +288,7 @@ void PythonExporter::WriteSSTStartupProgramOptions(QTextStream& out)
         // Make sure we are only writing the Exportable Properties (not the Generic Info)
         if ((PropExportable == true) && (PropValue.isEmpty() == false)) {
             // Write it out to the export file
-            out << QString("sst.sstProgramOption(\"%1\", \"%2\")").arg(PropName).arg(PropValue) << endl;
+            out << QString("sst.setProgramOption(\"%1\", \"%2\")").arg(PropName).arg(PropValue) << endl;
         }
     }
 }

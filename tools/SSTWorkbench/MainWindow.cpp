@@ -238,8 +238,7 @@ void MainWindow::SavePersistentStorage()
 
     // General Settings
     settings->beginGroup(PERSISTGROUP_GENERAL);
-    settings->setValue(PERSISTVALUE_SSTINFOXMLFILEPATH, m_SSTInfoXMLDataFilePath);
-    settings->setValue(PERSISTVALUE_SSTINFOXMLFILENAME, m_SSTInfoXMLDataFileName);
+    settings->setValue(PERSISTVALUE_SSTINFOXMLFILEPATHNAME, m_SSTInfoXMLDataFilePathName);
     settings->setValue(PERSISTVALUE_PROJECTFILEPATHNAME, m_LastSavedProjectDataFilePathName);
     settings->setValue(PERSISTVALUE_PYTHONEXPORTFILEPATHNAME, m_LastExportedPythonFilePathName);
     settings->endGroup();
@@ -265,10 +264,9 @@ void MainWindow::RestorePersistentStorage()
 
     // General Settings
     settings->beginGroup(PERSISTGROUP_GENERAL);
-    m_SSTInfoXMLDataFilePath = settings->value(PERSISTVALUE_SSTINFOXMLFILEPATH, QDir::homePath()).toString();
-    m_SSTInfoXMLDataFileName = settings->value(PERSISTVALUE_SSTINFOXMLFILENAME, "SSTInfo.xml").toString();
-    m_LastSavedProjectDataFilePathName = settings->value(PERSISTVALUE_PROJECTFILEPATHNAME, "").toString();
-    m_LastExportedPythonFilePathName = settings->value(PERSISTVALUE_PYTHONEXPORTFILEPATHNAME, "").toString();
+    m_SSTInfoXMLDataFilePathName = settings->value(PERSISTVALUE_SSTINFOXMLFILEPATHNAME, QDir::homePath()).toString();
+    m_LastSavedProjectDataFilePathName = settings->value(PERSISTVALUE_PROJECTFILEPATHNAME, QDir::homePath()).toString();
+    m_LastExportedPythonFilePathName = settings->value(PERSISTVALUE_PYTHONEXPORTFILEPATHNAME, QDir::homePath()).toString();
     settings->endGroup();
 
     settings->beginGroup(PERSISTGROUP_PREFERENCES);
@@ -1385,6 +1383,7 @@ void MainWindow::UserActionHandlerLoadDesign()
     QDir    DirInfo;
     QString StartingDir;
     QString Filter;
+    QString TempPath;
 
     // Check to see if the existing project is dirty before loading a new one
     if (IsProjectDirty() == true) {
@@ -1395,7 +1394,8 @@ void MainWindow::UserActionHandlerLoadDesign()
     }
 
     // Look at the Location for the SSTInfo XML data to see if its good
-    DirInfo.setPath(m_LastSavedProjectDataFilePathName);
+    TempPath = QFileInfo(m_LastSavedProjectDataFilePathName).dir().absolutePath();
+    DirInfo.setPath(TempPath);
 
     // Check to see that the Starting Directory Exists
     if (DirInfo.exists() == false) {
@@ -1426,6 +1426,7 @@ void MainWindow::UserActionHandlerLoadDesign()
             m_ExportSSTInputDeckAction->setEnabled(true);
             m_WorkBenchSaveAsAction->setEnabled(true);
             m_LoadedProjectDataFilePathName = ProjectFilePathName;
+            m_LastSavedProjectDataFilePathName = ProjectFilePathName;
         } else {
             QString errorString = QString("ERROR: SSTWorkbench Cannot Load Project File %1").arg(ProjectFilePathName);
             QMessageBox::critical(NULL, "Cannot Load Project File", errorString);
@@ -1460,9 +1461,11 @@ void MainWindow::UserActionHandlerSaveAs()
     QString StartingDir;
     QDir    DirInfo;
     QString Filter;
+    QString TempPath;
 
     // Look at the Location for the Project data to see if its good
-    DirInfo.setPath(m_LastSavedProjectDataFilePathName);
+    TempPath = QFileInfo(m_LastSavedProjectDataFilePathName).dir().absolutePath();
+    DirInfo.setPath(TempPath);
 
     // Check to see that the Starting Directory Exists
     if (DirInfo.exists() == false) {
@@ -1515,6 +1518,7 @@ void MainWindow::UserActionHandlerImportSSTInfo()
     QDir                 DirInfo;
     QString              StartingDir;
     SSTInfoXMLFileParser XMLFileParser;
+    QString              TempPath;
 
     // Check to see if the existing project has existing SSTInfoData
     if (m_CompToolBox->GetSSTInfoData() != NULL) {
@@ -1525,7 +1529,8 @@ void MainWindow::UserActionHandlerImportSSTInfo()
     }
 
     // Look at the Location for the SSTInfo XML data to see if its good
-    DirInfo.setPath(m_SSTInfoXMLDataFilePath);
+    TempPath = QFileInfo(m_SSTInfoXMLDataFilePathName).dir().absolutePath();
+    DirInfo.setPath(TempPath);
 
     // Check to see that the Starting Directory Exists
     if (DirInfo.exists() == false) {
@@ -1559,8 +1564,7 @@ void MainWindow::UserActionHandlerImportSSTInfo()
             m_WorkBenchSaveAsAction->setEnabled(true);
 
             // Save the File Name and Path settings
-            m_SSTInfoXMLDataFileName = XMLFileName;
-            m_SSTInfoXMLDataFilePath = QFileInfo(XMLFileName).dir().absolutePath();
+            m_SSTInfoXMLDataFilePathName = XMLFileName;
         }
     }
 }
@@ -1574,9 +1578,11 @@ void MainWindow::UserActionHandlerExportSSTInputDeck()
     QString StartingDir;
     QDir    DirInfo;
     QString Filter;
+    QString TempPath;
 
     // Look at the Location for the Python data to see if its good
-    DirInfo.setPath(m_LastExportedPythonFilePathName);
+    TempPath = QFileInfo(m_LastExportedPythonFilePathName).dir().absolutePath();
+    DirInfo.setPath(TempPath);
 
     // Check to see that the Starting Directory Exists
     if (DirInfo.exists() == false) {
@@ -1612,9 +1618,10 @@ void MainWindow::UserActionHandlerExportSSTInputDeck()
         PythonExporter PythonExport(m_WiringScene, ProjectFilePathName);
 
         // User selected a file, so now save the project data to it
-        if (PythonExport.PerformExportOfPythonFile() == true) {
-            m_LastExportedPythonFilePathName = ProjectFilePathName;
-        }
+        PythonExport.PerformExportOfPythonFile();
+
+        // Save the File Name and Path settings
+        m_LastExportedPythonFilePathName = ProjectFilePathName;
     }
 }
 
