@@ -119,6 +119,7 @@ private slots:
     void UserActionHandlerCopy();
     void UserActionHandlerPaste();
 
+    void UserActionHandlerNewProject();
     void UserActionHandlerLoadDesign();
     void UserActionHandlerSaveDesign();
     void UserActionHandlerSaveAs();
@@ -205,6 +206,7 @@ private:
     QAction*                m_CopyAction;
     QAction*                m_PasteAction;
 
+    QAction*                m_WorkBenchNewProjectAction;
     QAction*                m_WorkBenchLoadDesignAction;
     QAction*                m_WorkBenchSaveDesignAction;
     QAction*                m_WorkBenchSaveAsAction;

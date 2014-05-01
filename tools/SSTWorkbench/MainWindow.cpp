@@ -98,6 +98,8 @@ MainWindow::MainWindow(QWidget* parent /*=0*/)
 
     // Start the Focus on the main Wiring Window
     m_WiringView->setFocus();
+
+    UserActionHandlerNewProject();
 }
 
 MainWindow::~MainWindow()
@@ -450,6 +452,11 @@ void MainWindow::CreateActions()
     connect(m_PasteAction, SIGNAL(triggered()), this, SLOT(UserActionHandlerPaste()));
 
     ///
+    m_WorkBenchNewProjectAction = new QAction(QIcon(":/images/ProjectNew.png"), tr("&New Project..."), this);
+    m_WorkBenchNewProjectAction->setShortcuts(QKeySequence::New);
+    m_WorkBenchNewProjectAction->setStatusTip(tr("New SST Workbench Project"));
+    connect(m_WorkBenchNewProjectAction, SIGNAL(triggered()), this, SLOT(UserActionHandlerNewProject()));
+
     m_WorkBenchLoadDesignAction = new QAction(QIcon(":/images/ProjectOpen.png"), tr("&Open Project..."), this);
     m_WorkBenchLoadDesignAction->setShortcuts(QKeySequence::Open);
     m_WorkBenchLoadDesignAction->setStatusTip(tr("Load SST Workbench Project"));
@@ -600,6 +607,8 @@ void MainWindow::CreateMenus()
 
     // File Menu
     m_FileMenu = menuBar()->addMenu(tr("&File"));
+    m_FileMenu->addAction(m_WorkBenchNewProjectAction);
+    m_FileMenu->addSeparator();
     m_FileMenu->addAction(m_WorkBenchLoadDesignAction);
     m_FileMenu->addAction(m_WorkBenchSaveDesignAction);
     m_FileMenu->addSeparator();
@@ -1372,6 +1381,30 @@ void MainWindow::UserActionHandlerPaste()
 
     // Increase the Paste Offset
     m_PasteOffset += DEFAULT_PASTE_OFFSET;
+}
+
+void MainWindow::UserActionHandlerNewProject()
+{
+    // Disable Moving Ports
+    EnableMovingPorts(false);
+
+    // Check to see if the existing project is dirty before loading a new one
+    if (IsProjectDirty() == true) {
+        QString errorString = "Changes have been made to the project\n Are you sure you want to loose your changes and create a new project?";
+        if (QMessageBox::question(NULL, "Loose Changes?", errorString) == QMessageBox::No) {
+            return;
+        }
+    }
+
+    // Select and delete all objects
+    UserActionHandlerSelectAll();
+    UserActionHandlerDeleteItem();
+
+    // Do any startup work for the new project
+
+    SetProjectDirty(false);
+    m_ExportSSTInputDeckAction->setEnabled(true);
+    m_WorkBenchSaveAsAction->setEnabled(false);
 }
 
 void MainWindow::UserActionHandlerLoadDesign()

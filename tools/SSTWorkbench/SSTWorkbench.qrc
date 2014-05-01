@@ -28,5 +28,6 @@
         <file>images/Undo.png</file>
         <file>images/Redo.png</file>
         <file>images/SST_Single_S_Logo.png</file>
+        <file>images/ProjectNew.png</file>
     </qresource>
 </RCC>

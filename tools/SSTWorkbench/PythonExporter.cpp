@@ -73,8 +73,12 @@ bool PythonExporter::CheckSSTStartupConfigComponent()
     }
 
     // We did not find the Startup Config Component
-    m_ExportErrorsList.append("ERROR: SST Startup Configuration Component not found.");
-    return false;
+//    m_ExportErrorsList.append("ERROR: SST Startup Configuration Component not found.");
+//    return false;
+
+    // Changed to Warning that the configuration is not found, and no error
+    m_ExportWarningsList.append("Warning: SST Startup Configuration Component not found.");
+    return true;
 }
 
 bool PythonExporter::CheckComponentParameters()
@@ -141,7 +145,8 @@ bool PythonExporter::CheckComponentUnconnectedPorts()
                 if (ptrPort->IsPortConfigured() == false) {
                     m_ExportWarningsList.append(QString("Warning: Component %1 - Port %2 is Dynamic and NOT Configured.").arg(CompName).arg(PortName));
                 } else if (ptrPort->IsPortConnectedToWire() == false) {
-                    m_ExportWarningsList.append(QString("Warning: Component %1 - Port %2 is Not Connected to a Wire.").arg(CompName).arg(PortName));
+                    // Removed this warning as it is annoying since lots of ports will not be connected
+//                  m_ExportWarningsList.append(QString("Warning: Component %1 - Port %2 is Not Connected to a Wire.").arg(CompName).arg(PortName));
                 }
             }
         }
@@ -274,6 +279,12 @@ void PythonExporter::WriteSSTStartupProgramOptions(QTextStream& out)
     HEADER;
     BLANKLINE;
     out << "# Set the SST Startup Configuration" << endl;
+
+    // Check to se that we have a startup config component
+    if (m_StartupConfigComponent == NULL)  {
+        out << "# SST Startup Configuration Component in SST Workbench was not found." << endl;
+        return;
+    }
 
     // Get the number of properties for the SST Startup Configuration Component
     NumProperties = m_StartupConfigComponent->GetItemProperties()->GetNumProperties();

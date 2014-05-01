@@ -104,7 +104,7 @@ GraphicItemComponent::GraphicItemComponent(int ComponentIndex, SSTInfoDataCompon
         GetItemProperties()->AddProperty(COMPONENT_PROPERTY_WEIGHT, "", "Weight of Component (float)", ItemProperty::READWRITE, false);
     } else {
         GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPNAME, m_ComponentName, "Component Name", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", ItemProperty::READONLY, false);
+//      GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", ItemProperty::READONLY, false);
         GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMMENT, "", "Comment on this Component", ItemProperty::READWRITE, false);
     }
 
