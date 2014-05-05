@@ -24,6 +24,7 @@
 #include "GraphicItemText.h"
 #include "GraphicItemWire.h"
 #include "DialogPortsConfig.h"
+#include "DialogManageModules.h"
 #include "DialogPreferences.h"
 #include "SSTInfoXMLFileParser.h"
 #include "PythonExporter.h"
@@ -140,8 +141,9 @@ private slots:
     void UserActionSceneScaleZoomOut();
     void UserActionSceneScaleZoomAll();
 
-    void UserActionHandlerSetDynamicPorts();
     void UserActionHandlerMovePorts();
+    void UserActionHandlerSetDynamicPorts();
+    void UserActionHandlerManageModules();
 
     void UserActionTextColorButtonTriggered();
     void UserActionComponentFillColorButtonTriggered();
@@ -161,6 +163,7 @@ private:
     WindowComponentToolBox* m_CompToolBox;
     WindowItemProperties*   m_PropWin;
     DialogPortsConfig*      m_ConfigurePortsDialog;
+    DialogManageModules*    m_ManageModulesDialog;
     DialogPreferences*      m_PreferencesDialog;
     QSplitter*              m_MainSplitterWidget;
     QTabWidget*             m_TabWiringWindow;
@@ -225,6 +228,7 @@ private:
 
     QAction*                m_MovePortsAction;
     QAction*                m_SetDynamicPortsAction;
+    QAction*                m_ManageModulesAction;
 
     QAction*                m_ShowFileActionsToolbarAction;
     QAction*                m_ShowEditToolbarAction;

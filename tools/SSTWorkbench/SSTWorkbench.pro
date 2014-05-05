@@ -65,6 +65,7 @@ SOURCES += \
     DialogParametersConfig.cpp \
     DialogExportDisplayStatus.cpp \
     DialogPreferences.cpp \
+    DialogManageModules.cpp \
     WiringScene.cpp \
     WindowItemProperties.cpp \
     WindowComponentToolbox.cpp \
@@ -91,6 +92,7 @@ HEADERS += \
     DialogParametersConfig.h \
     DialogExportDisplayStatus.h \
     DialogPreferences.h \
+    DialogManageModules.h \
     WiringScene.h \
     WindowItemProperties.h \
     WindowComponentToolbox.h \
@@ -116,7 +118,8 @@ FORMS += \
     DialogPortsConfig.ui \
     DialogExportDisplayStatus.ui \
     DialogPreferences.ui \
-    DialogParametersConfig.ui
+    DialogParametersConfig.ui \
+    DialogManageModules.ui
 
 OTHER_FILES += \
     build_linux_release.sh \

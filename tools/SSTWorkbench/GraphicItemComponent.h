@@ -74,6 +74,11 @@ public:
     bool GetMovingPortsMode() {return m_MovingPortsMode;}
     void SetMovingPortsMode(bool Flag);
 
+    // Module Support
+    QStringList GetModulesList() {return m_ComponentModuleNames;}
+    void        SetModulesList(QStringList ModulesList) {m_ComponentModuleNames = ModulesList;}
+    void        AddModuleParameter(QString ParamName, QString DefaultValue, QString Desc);
+
 signals:
     void ItemComponentSetProjectDirty();
     void ItemComponentRefreshPropertiesWindowProperty(QString, QString);
@@ -127,6 +132,10 @@ private:
     QList<GraphicItemPort*>             m_GraphicalPortArray;           // Array of all Graphical Ports
     QList<GraphicItemPort*>             m_GraphicalPortArrayLeftSide;   // Array of Graphical Ports on the Left Side
     QList<GraphicItemPort*>             m_GraphicalPortArrayRightSide;  // Array of Graphical Ports on the Right Side
+
+    QStringList                         m_ComponentModuleNames;             // String Array of Module Names loaded by this Component
+    QList<QGraphicsRectItem*>           m_ComponentModuleRectList;
+    QList<QGraphicsSimpleTextItem*>     m_ComponentModuleTextList;
 
     QGraphicsSimpleTextItem*            m_ComponentGraphicDisplayName;
     QGraphicsSimpleTextItem*            m_ComponentGraphicDisplayTypeName;

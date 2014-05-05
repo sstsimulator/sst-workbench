@@ -150,6 +150,8 @@ GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, QMenu* Ite
     DataStreamIn >> m_ComponentTypeName;
     DataStreamIn >> m_NumAllowedInstances;
     DataStreamIn >> m_ComponentFillColor;
+    DataStreamIn >> m_ComponentModuleNames;
+
     DataStreamIn >> NumPorts;
 
     // Set the Type and Menu
@@ -233,6 +235,7 @@ void GraphicItemComponent::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_ComponentTypeName;
     DataStreamOut << (qint32)m_NumAllowedInstances;
     DataStreamOut << m_ComponentFillColor;
+    DataStreamOut << m_ComponentModuleNames;
 
     // Save the number of ports and then save all the ports
     DataStreamOut << (qint32)m_PortInfoDataArray.count();
@@ -282,6 +285,20 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
     int                            NumGraphicalDynPorts;
     QVector<int>                   PhysicalPortSideSequenceArray;
     QString                        FinalComponentDisplayName;
+    QGraphicsRectItem*             ModuleRectItem;
+    QGraphicsSimpleTextItem*       ModuleTextItem;
+    int                            ModuleCount;
+    QFontMetrics                   FontMetric(QGuiApplication::font());
+    int                            ComponentTextHeight = FontMetric.height();
+    int                            ModuleRectOffset = 5;
+    int                            ModuleRectWidth = COMPONENT_WIDTH - (ModuleRectOffset * 2);
+    int                            ModuleRectHeight;
+    int                            ModuleRectYPos;
+    int                            ModuleTextSpacer = 5;
+    int                            ModuleTextWidth;
+    int                            ModuleTextHeight;
+    int                            ModuleTextYPos;
+    int                            ComponentTextYPos;
 
     // THIS ROUTINE UPDATES THE DISPLAY OF THE COMPONENT.  IT ASSUMES
     // THAT PORTS (STATIC OR DYNAMIC) HAVE ALREADY BEEN CREATED.  IF A PORT IS STATIC
@@ -319,7 +336,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
     }
 
     ///////////////////////////////////////////
-    // SECOND - UGLY BRUTE FORCE METHOD TO DECIDE WHERE THE GRAPHICAL PORTS
+    // SECOND CONTINUED - UGLY BRUTE FORCE METHOD TO DECIDE WHERE THE GRAPHICAL PORTS
     // LIVE IN THE PHYSICAL SEQUENCE ON LEFT AND RIGHT SIDES.
     // NOTE: IT IS ASSUMED THAT ALL DYNAMIC PORTS WILL BE IN SEQUENTIAL
     //       LOCATIONS IN THE m_GraphicalPortArray
@@ -401,27 +418,84 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
     }
 
     ///////////////////////////////////////////
-    // THIRD - SETUP SIZE OF THE COMPONENT BOX AND SET IT'S TEXT
+    // THIRD - SETUP SIZE OF THE COMPONENT BOX
     // Setup the box dimensions that show the rectangle of the component
     SetComponentBoxDimensions(m_NumPortsLeftSide, m_NumPortsRightSide);
+
+    ///////////////////////////////////////////
+    // FORTH - ADD THE MODULES LOADED UNDER THE COMPONENT
+    // Blow away any created Module Objects
+    ModuleCount = m_ComponentModuleRectList.count();
+    for (x = 0; x < ModuleCount; x++) {
+        delete m_ComponentModuleRectList.at(0);
+        delete m_ComponentModuleTextList.at(0);
+        m_ComponentModuleRectList.removeAt(0);
+        m_ComponentModuleTextList.removeAt(0);
+    }
+
+    // Set Module Rect Height the same as the height of the default application font,
+    // And set the Initial Module Rect Y Position
+    ModuleRectHeight = ComponentTextHeight;
+    ModuleRectYPos = m_ComponentSideHeight;
+
+    // Now add the QGraphicsRectItem's for each Module,
+    // and put the Module name (QGraphicsSimpleTextItem) inside each Rect
+    for (x = 0; x < m_ComponentModuleNames.size(); x++) {
+        // Create the rect item and add it ot the list
+        ModuleRectItem = new QGraphicsRectItem(COMPONENT_LEFT_X + ModuleRectOffset, ModuleRectYPos, ModuleRectWidth, ModuleRectHeight, this);
+        m_ComponentModuleRectList.append(ModuleRectItem);
+
+        // Create the Text Item
+        ModuleTextItem = new QGraphicsSimpleTextItem(m_ComponentModuleNames.at(x), this);
+        m_ComponentModuleTextList.append(ModuleTextItem);
+
+        // Figure out the width and heigth of the text and make it
+        // fit inside the Module Rect (with a little spacing)
+        ModuleTextWidth = QFontMetrics(ModuleTextItem->font()).width(m_ComponentModuleNames.at(x));
+        ModuleTextHeight = QFontMetrics(ModuleTextItem->font()).height();
+        while (ModuleTextWidth > ModuleRectWidth - ModuleTextSpacer) {
+            int   PointSize = ModuleTextItem->font().pointSize();
+            QFont font = ModuleTextItem->font();
+            font.setPointSize(PointSize - 1);
+            ModuleTextItem->setFont(font);
+            ModuleTextWidth = QFontMetrics(ModuleTextItem->font()).width(m_ComponentModuleNames.at(x));
+            ModuleTextHeight = QFontMetrics(ModuleTextItem->font()).height();
+        }
+
+        // Set the Position of the text (NOTE: Text Height will always be the same or
+        // a bit smaller than the Module Rect Height (depending upon the text length)
+        ModuleTextYPos = ModuleRectYPos + ((ModuleRectHeight - ModuleTextHeight) / 2);
+        ModuleTextItem->setPos(COMPONENT_LEFT_X + ModuleRectOffset + ModuleTextSpacer, ModuleTextYPos);
+
+        // Increment the Y Position for the Next Rect
+        ModuleRectYPos += ModuleRectHeight;
+    }
+
+    ///////////////////////////////////////////
+    // FIFTH - SETUP THE COMPONENT NAME
+    // Set the text and position of the component name
 
     // Check to see if We need to modify the Component name for Moving Ports
     if (m_MovingPortsMode == true) {
         m_ComponentGraphicDisplayName->setBrush(Qt::red);
         FinalComponentDisplayName = m_ComponentDisplayName + "\n" + COMPONENT_DISPLAY_MOVING_PORTS;
+        ComponentTextYPos = COMPONENT_TOP_Y - (ComponentTextHeight * 2);
+
     } else {
         m_ComponentGraphicDisplayName->setBrush(Qt::black);
         FinalComponentDisplayName = m_ComponentDisplayName;
+        ComponentTextYPos = COMPONENT_TOP_Y - ComponentTextHeight;
     }
 
-    // Set the text and position of the component name
+    // Set the Component Name on top of the Component Box
     m_ComponentGraphicDisplayName->setText(FinalComponentDisplayName);
-    m_ComponentGraphicDisplayName->setPos(COMPONENT_LEFT_X, m_ComponentSideHeight);
+    m_ComponentGraphicDisplayName->setPos(COMPONENT_LEFT_X, ComponentTextYPos);
 
+    // Set the Component Name Inside (at Top Left) of the Component Box
     m_ComponentGraphicDisplayTypeName->setText(m_ComponentDisplayTypeName);
     m_ComponentGraphicDisplayTypeName->setPos(COMPONENT_LEFT_X + COMPONENT_TYPENAME_OFFSET, COMPONENT_TOP_Y);
 
-    // FORTH - SET SIDE AND POSITION OF EACH GRAPHICAL PORT (STATIC AND DYNAMIC)
+    // SIXTH - SET SIDE AND POSITION OF EACH GRAPHICAL PORT (STATIC AND DYNAMIC)
     // Look at all the ports in the GraphicalPortArray. Put the port
     // on the correct side in the correct position.
     for (x = 0; x < m_GraphicalPortArray.count(); x++) {
@@ -515,6 +589,13 @@ void GraphicItemComponent::SetMovingPortsMode(bool Flag)
 
     // Update the component
     UpdateVisualLayoutOfComponent();
+}
+
+void GraphicItemComponent::AddModuleParameter(QString ParamName, QString DefaultValue, QString Desc)
+{
+    // Add this module parameter to the Components properties list
+    // NOTE: Duplicate mames will not be added
+    GetItemProperties()->AddProperty(ParamName, DefaultValue, Desc);
 }
 
 void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
@@ -723,6 +804,7 @@ void GraphicItemComponent::CreateInitiaLVisualLayoutOfComponent()
     PortInfoData*                  PortInfo;
     PortInfoData::ComponentSide    PortAssignedSide;
     int                            PortSideSequence;
+    int                            ComponentTextYPos;
 
     // THIS ROUTINE CREATES THE INITIAL LAYOUT OF THE COMPONENT.  IT ASSUMES
     // THAT ALL PORTS (STATIC OR DYNAMIC) WILL CREATE A SINGLE GRAPHICAL
@@ -734,7 +816,8 @@ void GraphicItemComponent::CreateInitiaLVisualLayoutOfComponent()
 
     // Set the text and position of the component name
     m_ComponentGraphicDisplayName->setText(m_ComponentDisplayName);
-    m_ComponentGraphicDisplayName->setPos(COMPONENT_LEFT_X, m_ComponentSideHeight);
+    ComponentTextYPos = COMPONENT_TOP_Y - QFontMetrics(QGuiApplication::font()).height();
+    m_ComponentGraphicDisplayName->setPos(COMPONENT_LEFT_X, ComponentTextYPos);
 
     m_ComponentGraphicDisplayTypeName->setText(m_ComponentDisplayTypeName);
     m_ComponentGraphicDisplayTypeName->setPos(COMPONENT_LEFT_X + COMPONENT_TYPENAME_OFFSET, COMPONENT_TOP_Y);

@@ -528,15 +528,18 @@ void MainWindow::CreateActions()
     ///
     // Build the Component Menu Actions
     m_MovePortsAction = new QAction("&Move Port Positions", this);
-    m_MovePortsAction->setShortcut(tr("Ctrl+M"));
     m_MovePortsAction->setStatusTip(tr("Move Component Ports"));
     connect(m_MovePortsAction, SIGNAL(triggered()), this, SLOT(UserActionHandlerMovePorts()));
 
     m_SetDynamicPortsAction = new QAction("Set Dynamic Por&ts...", this);
-    m_SetDynamicPortsAction->setShortcut(tr("Ctrl+T"));
     m_SetDynamicPortsAction->setStatusTip(tr("Set Component Dynamic Ports"));
     m_SetDynamicPortsAction->setVisible(false);
     connect(m_SetDynamicPortsAction, SIGNAL(triggered()), this, SLOT(UserActionHandlerSetDynamicPorts()));
+
+    m_ManageModulesAction = new QAction("Mana&ge Component Modules...", this);
+    m_ManageModulesAction->setStatusTip(tr("Manage the Components Modules"));
+    m_ManageModulesAction->setVisible(false);
+    connect(m_ManageModulesAction, SIGNAL(triggered()), this, SLOT(UserActionHandlerManageModules()));
 
     ///
     // Actions for displaying the Toolbars
@@ -646,6 +649,8 @@ void MainWindow::CreateMenus()
     m_GenericItemMenu->addAction(m_MovePortsAction);
     m_GenericItemMenu->addSeparator();
     m_GenericItemMenu->addAction(m_SetDynamicPortsAction);
+    m_GenericItemMenu->addSeparator();
+    m_GenericItemMenu->addAction(m_ManageModulesAction);
 
     // View Menu
     m_ViewMenu = menuBar()->addMenu(tr("&View"));
@@ -1039,6 +1044,7 @@ void MainWindow::HandleSceneEventGraphicItemSelected(QGraphicsItem* Item)
     // Turn off component menu items initially
     m_MovePortsAction->setVisible(false);
     m_SetDynamicPortsAction->setVisible(false);
+    m_ManageModulesAction->setVisible(false);
     m_SelectedComponent = NULL;
     m_SelectedText = NULL;
 
@@ -1049,6 +1055,7 @@ void MainWindow::HandleSceneEventGraphicItemSelected(QGraphicsItem* Item)
         if (m_SelectedComponent != NULL) {
             m_MovePortsAction->setVisible((m_SelectedComponent->GetNumGraphicalPortsOnComponent() > 0) && (IsMovingPortsEnabled() == false));
             m_SetDynamicPortsAction->setVisible(m_SelectedComponent->ComponentContainsDynamicPorts());
+            m_ManageModulesAction->setVisible(true);
             return;
         }
 
@@ -1403,7 +1410,7 @@ void MainWindow::UserActionHandlerNewProject()
     // Do any startup work for the new project
 
     SetProjectDirty(false);
-    m_ExportSSTInputDeckAction->setEnabled(true);
+    m_ExportSSTInputDeckAction->setEnabled(false);
     m_WorkBenchSaveAsAction->setEnabled(false);
 }
 
@@ -1904,6 +1911,11 @@ void MainWindow::UserActionSceneScaleZoomAll()
     }
 }
 
+void MainWindow::UserActionHandlerMovePorts()
+{
+    EnableMovingPorts(true);
+}
+
 void MainWindow::UserActionHandlerSetDynamicPorts()
 {
     // Disable Moving Ports
@@ -1925,9 +1937,25 @@ void MainWindow::UserActionHandlerSetDynamicPorts()
     }
 }
 
-void MainWindow::UserActionHandlerMovePorts()
+void MainWindow::UserActionHandlerManageModules()
 {
-    EnableMovingPorts(true);
+    // Disable Moving Ports
+    EnableMovingPorts(false);
+
+    // If a port has been selected, and this menu choosen then bring up the
+    // dialog box (Menu Items are controlled by the type of component)
+    if (m_SelectedComponent != NULL) {
+        // Create the Dialog
+        m_ManageModulesDialog = new DialogManageModules(m_SelectedComponent, m_CompToolBox->GetSSTInfoData(), this);
+
+        // Run the dialog box (Modal)
+        m_ManageModulesDialog->exec();
+
+        SetProjectDirty();
+
+        // Delete the Dialog
+        delete m_ManageModulesDialog;
+    }
 }
 
 void MainWindow::UserActionTextColorButtonTriggered()

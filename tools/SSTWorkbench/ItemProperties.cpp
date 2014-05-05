@@ -381,20 +381,41 @@ void ItemProperties::AddStaticProperty(QString PropertyName, QString PropertyVal
 {
     ItemProperty* PropItem;
 
-    // Create the new ItemProperty
-    PropItem = new ItemProperty(this, PropertyName, PropertyName, PropertyValue, PropertyDesc, ReadOnly, Exportable, false, "");
+    // Check to see that the Property Name is unique
+    if (IsPropertyNameNotInList(PropertyName) == true) {
 
-    // Add it to the list
-    m_PropertyList.push_back(PropItem);
+        // Create the new ItemProperty
+        PropItem = new ItemProperty(this, PropertyName, PropertyName, PropertyValue, PropertyDesc, ReadOnly, Exportable, false, "");
+
+        // Add it to the list
+        m_PropertyList.push_back(PropItem);
+    }
 }
 
 void ItemProperties::AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, QString ControllingParam)
 {
     ItemProperty* PropItem;
 
-    // Create the new ItemProperty
-    PropItem = new ItemProperty(this, PropertyName, PropertyName, PropertyValue, PropertyDesc, ReadOnly, Exportable, true, ControllingParam);
+    // Check to see that the Property Name is unique
+    if (IsPropertyNameNotInList(PropertyName) == true) {
 
-    // Add it to the list
-    m_PropertyList.push_back(PropItem);
+        // Create the new ItemProperty
+        PropItem = new ItemProperty(this, PropertyName, PropertyName, PropertyValue, PropertyDesc, ReadOnly, Exportable, true, ControllingParam);
+
+        // Add it to the list
+        m_PropertyList.push_back(PropItem);
+    }
+}
+
+bool ItemProperties::IsPropertyNameNotInList(QString PropertyName)
+{
+    int           x;
+
+    // See if the property name is already in the list
+    for (x = 0; x < m_PropertyList.count(); x++) {
+        if (PropertyName == m_PropertyList.at(x)->GetName()) {
+            return false;
+        }
+    }
+    return true;
 }

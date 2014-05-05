@@ -124,6 +124,7 @@ public:
 private:
     void AddStaticProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable);
     void AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, QString ControllingParam);
+    bool IsPropertyNameNotInList(QString PropertyName);
 
 private:
     QList<ItemProperty*> m_PropertyList;

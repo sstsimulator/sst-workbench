@@ -134,6 +134,9 @@
 #define CONFIGPARAMDLG_HEADER_SET_NUM_PARAMS    "Set Number of Parameters"
 #define CONFIGPARAMDLG_HEADER_0_WIDTH           200
 
+// Manage Modules Dialog Settings
+#define MANAGEMODULESDLG_DLGTITLE               "Manage Component Modules"
+
 // Port Info Data Settings
 #define PORTINFO_UNCONFIGURED                   "UNCONFIGURED - "
 
