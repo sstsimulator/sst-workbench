@@ -18,7 +18,7 @@
 
 // CORE APPLICATION SETTINGS
 #define COREAPP_APPNAME                         "SSTWorkBench"
-#define COREAPP_VERSION                         "1.0"                           /*** INCREMENT FOR NEW APP VERSION ***/
+#define COREAPP_VERSION                         "1.1"                           /*** INCREMENT FOR NEW APP VERSION ***/
 #define COREAPP_ORGNAME                         "Sandia_Corporation"
 #define COREAPP_DOMAINNAME                      "sst.sandia.gov"
 #define COREAPP_SINGLEINSTANCEKEY               "__SST_WORKBENCH_SINGLEINSTANCEKEY__"

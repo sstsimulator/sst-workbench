@@ -134,6 +134,7 @@ void DialogPortsConfig::SavePortData()
     PortInfoData*     PortInfo;
     QString           ControllingParam;
     QString           NumInstancesStr;
+    ItemProperty*     Property;
 
     // Disable the table to lock down any cells that are being edited
     ui->TableWidget_DynPorts->setDisabled(true);
@@ -159,14 +160,18 @@ void DialogPortsConfig::SavePortData()
     // Tell the component to redraw itself
     m_SelectedComponent->UpdateVisualLayoutOfComponent();
 
-    // Now for all Ports Sync any changes to the port number to the its Component Parameter (if one exists)
+    // Now for all Ports Sync any changes to the port number to the its Component Property (if one exists)
     for (x = 0; x < m_SelectedComponent->GetPortInfoDataArray().count(); x++) {
         PortInfo = m_SelectedComponent->GetPortInfoDataArray().at(x);
         NumInstancesStr = QString("%1").arg(PortInfo->GetNumCreatedInstances());
         ControllingParam = PortInfo->GetDynamicPortContollingParameterName();
         if (ControllingParam.isEmpty() == false) {
-            m_SelectedComponent->GetItemProperties()->GetProperty(ControllingParam)->SetValue(NumInstancesStr, false);
-            emit m_SelectedComponent->ItemComponentRefreshPropertiesWindowProperty(ControllingParam, NumInstancesStr);
+            // Get the property set by the controlling property
+            Property = m_SelectedComponent->GetItemProperties()->GetProperty(ControllingParam);
+            if (Property != NULL) {
+                Property->SetValue(NumInstancesStr, false);
+                emit m_SelectedComponent->ItemComponentRefreshPropertiesWindowProperty(ControllingParam, NumInstancesStr);
+            }
         }
     }
 }
