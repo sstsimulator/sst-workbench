@@ -1700,6 +1700,9 @@ void MainWindow::UserActionHandlerAbout()
 
     AboutText += "<center><h2>SST Workbench</h2>Version %1<br><br>";
 
+    AboutText += "Built With Qt Version %2<br>";
+    AboutText += "Using Qt Runtime Libraries %3<br><br>";
+
     AboutText += "Copyright (c) 2009-2014<br>Sandia Corporation.  ";
     AboutText += "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, ";
     AboutText += "the U.S. Government retains certain rights in this software.<br><br>";
@@ -1708,7 +1711,7 @@ void MainWindow::UserActionHandlerAbout()
     AboutText += "<img src=:/images/SSTLogo.png><br>";
 
     if (m_CompToolBox->GetSSTInfoData() != NULL) {
-        AboutText += "SST Version %2<br>";
+        AboutText += "SST Version %4<br>";
         SSTVersion = m_CompToolBox->GetSSTInfoData()->GetSSTInfoVersion();
     }
 
@@ -1716,9 +1719,9 @@ void MainWindow::UserActionHandlerAbout()
     AboutText += "For license information, see the LICENSE file in the top level directory of the distribution.</center> ";
 
     if (m_CompToolBox->GetSSTInfoData() != NULL) {
-        FinalAboutText = AboutText.arg(COREAPP_VERSION).arg(SSTVersion);
+        FinalAboutText = AboutText.arg(COREAPP_VERSION).arg(QT_VERSION_STR).arg(qVersion()).arg(SSTVersion);
     } else {
-        FinalAboutText = AboutText.arg(COREAPP_VERSION);
+        FinalAboutText = AboutText.arg(COREAPP_VERSION).arg(QT_VERSION_STR).arg(qVersion());
     }
 
     QMessageBox::about(this, tr("About SST Workbench"), FinalAboutText);
