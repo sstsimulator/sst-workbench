@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2014 Sandia Corporation. Under the terms
+// Copyright 2009-2015 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2014, Sandia Corporation
+// Copyright (c) 2009-2015, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -1703,10 +1703,10 @@ void MainWindow::UserActionHandlerAbout()
     AboutText += "Built With Qt Version %2<br>";
     AboutText += "Using Qt Runtime Libraries %3<br><br>";
 
-    AboutText += "Copyright (c) 2009-2014<br>Sandia Corporation.  ";
+    AboutText += "Copyright (c) 2009-2015<br>Sandia Corporation.  ";
     AboutText += "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, ";
     AboutText += "the U.S. Government retains certain rights in this software.<br><br>";
-    AboutText += "Copyright (c) 2009-2014,<br>Sandia Corporation<br>All rights reserved.<br><br>";
+    AboutText += "Copyright (c) 2009-2015,<br>Sandia Corporation<br>All rights reserved.<br><br>";
 
     AboutText += "<img src=:/images/SSTLogo.png><br>";
 
