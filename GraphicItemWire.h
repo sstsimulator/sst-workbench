@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -39,7 +39,7 @@ public:
 
     // Constructor / Destructor
     GraphicItemWire(int WireIndex, const QPointF& StartPoint, const QPointF& EndPoint, QGraphicsItem* parent = 0);
-    GraphicItemWire(QDataStream& DataStreamIn, int NewWireIndex = -1, QGraphicsItem* parent = 0);   // Only used for serialization
+    GraphicItemWire(QDataStream& DataStreamIn, qint32 ProjectFileVersion, int NewWireIndex = -1, QGraphicsItem* parent = 0);   // Only used for serialization
     virtual ~GraphicItemWire();
 
     // General info on the wire
@@ -67,6 +67,7 @@ public:
     // Get Start / End Point Positions
     QPointF GetStartPoint() {return m_StartPoint;}
     QPointF GetEndPoint() {return m_EndPoint;}
+    qreal   GetLineLength() {return (m_StartPoint - m_EndPoint).manhattanLength();}
 
     // Callback Handlers from the Lower Level WireLiineSegments
     void HandleWireLineSegmentItemChange(const QPointF& NewPos, GraphicItemWireLineSegment* CallingWireLineSegment, GraphicsItemChange change, const QVariant& value);
@@ -115,9 +116,9 @@ private:
     GraphicItemWireHandle*      m_StartPointHandle;
     GraphicItemWireHandle*      m_EndPointHandle;
 
-    GraphicItemWireLineSegment* m_StartPointLine;
+    GraphicItemWireLineSegment* m_StartPointHLine;
     GraphicItemWireLineSegment* m_MiddleVLine1;
-    GraphicItemWireLineSegment* m_EndPointLine;
+    GraphicItemWireLineSegment* m_EndPointHLine;
 
     bool                        m_AutomaticWireLinePositioning;
 

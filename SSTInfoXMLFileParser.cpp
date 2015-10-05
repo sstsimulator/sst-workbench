@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -91,7 +91,7 @@ bool XMLSSTInfoDataHandler::startElement(const QString& namespaceURI, const QStr
     QString AttributeCategory;
     QString AttributeDefault;
     QString AttributeEvent;
-    SSTInfoDataComponent::ComponentType ComponentType;
+    ComponentType_enum ComponentType;
 
     // THIS IS CALLED WHEN THE XML PARSER STARTS PROCESSING AN ELEMENT
 
@@ -432,18 +432,18 @@ bool XMLSSTInfoDataHandler::fatalError(const QXmlParseException& exception)
     return false;
 }
 
-SSTInfoDataComponent::ComponentType XMLSSTInfoDataHandler::ConvertStringToComponentType(QString ComponentTypeString)
+ComponentType_enum XMLSSTInfoDataHandler::ConvertStringToComponentType(QString ComponentTypeString)
 {
     if (ComponentTypeString == "PROCESSOR COMPONENT") {
-        return SSTInfoDataComponent::COMP_PROCESSOR;
+        return COMP_PROCESSOR;
     } else if (ComponentTypeString == "MEMORY COMPONENT") {
-        return SSTInfoDataComponent::COMP_MEMORY;
+        return COMP_MEMORY;
     } else if (ComponentTypeString == "NETWORK COMPONENT") {
-        return SSTInfoDataComponent::COMP_NETWORK;
+        return COMP_NETWORK;
     } else if (ComponentTypeString == "SYSTEM COMPONENT") {
-        return SSTInfoDataComponent::COMP_SYSTEM;
+        return COMP_SYSTEM;
     } else {
-        return SSTInfoDataComponent::COMP_UNCATEGORIZED;
+        return COMP_UNCATEGORIZED;
     }
 }
 

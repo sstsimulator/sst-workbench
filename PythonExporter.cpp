@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -34,8 +34,8 @@ bool PythonExporter::PerformExportOfPythonFile()
     // Check for SST Startup Configuration Component Exists
     m_bFinalResult &= CheckSSTStartupConfigComponent();
 
-    // Check the Component Parameters
-    m_bFinalResult &= CheckComponentParameters();
+    // Check the Component Properties
+    m_bFinalResult &= CheckComponentProperties();
 
     // Check the Component Ports
     m_bFinalResult &= CheckComponentUnconnectedPorts();
@@ -65,7 +65,7 @@ bool PythonExporter::CheckSSTStartupConfigComponent()
             ptrComponent = (GraphicItemComponent*)item;
 
             // Check to see if this object is a SSTStartupConfigurationObject
-            if (ptrComponent->GetComponentType() == SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION) {
+            if (ptrComponent->GetComponentType() == COMP_SSTSTARTUPCONFIGURATION) {
                 m_StartupConfigComponent = ptrComponent;
                 return true;
             }
@@ -81,7 +81,7 @@ bool PythonExporter::CheckSSTStartupConfigComponent()
     return true;
 }
 
-bool PythonExporter::CheckComponentParameters()
+bool PythonExporter::CheckComponentProperties()
 {
     GraphicItemComponent* ptrComponent;
     int                   x;
@@ -110,7 +110,7 @@ bool PythonExporter::CheckComponentParameters()
                 // Detirmine if the Value is Required
                 if (PropValue == "REQUIRED") {
                     bRtn = false;
-                    m_ExportErrorsList.append(QString("ERROR: Component %1 - Parameter %2 is REQUIRED.").arg(CompName).arg(PropName));
+                    m_ExportErrorsList.append(QString("ERROR: Component %1 - Property %2 is REQUIRED.").arg(CompName).arg(PropName));
                 }
             }
         }
@@ -336,7 +336,7 @@ void PythonExporter::WriteComponents(QTextStream& out)
             ptrComponent = (GraphicItemComponent*)item;
 
             // Check to see that this object is Not a SSTStartupConfigurationObject
-            if (ptrComponent->GetComponentType() != SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION) {
+            if (ptrComponent->GetComponentType() != COMP_SSTSTARTUPCONFIGURATION) {
                 // Get some specific properties
                 Properties = ptrComponent->GetItemProperties();
                 CompUniqueName = Properties->GetPropertyValue(COMPONENT_PROPERTY_UNIQUENAME);
@@ -365,7 +365,7 @@ void PythonExporter::WriteComponents(QTextStream& out)
                 }
 
                 FirstLineDone = false;
-                // Set Component Parameters
+                // Set Component Properties
                 out << CompVariableName << ".addParams( {";
 
                 // Get the number of properties for Component
@@ -385,7 +385,7 @@ void PythonExporter::WriteComponents(QTextStream& out)
                             out << endl;
                         }
 
-                        // Write the parameter out to the export file
+                        // Write the Property out to the export file
                         out << TAB << QString("\"%1\" : \"%2\"").arg(PropName).arg(PropValue);
                         FirstLineDone = true;
                     }

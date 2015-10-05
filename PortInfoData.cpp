@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -15,7 +15,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-PortInfoData::PortInfoData(SSTInfoDataPort* SSTInfoPort, PortInfoData::ComponentSide ComponentSide)
+PortInfoData::PortInfoData(SSTInfoDataPort* SSTInfoPort, ComponentSide_enum ComponentSide)
 {
     // NOTE: We do not save the pointer to the SSTInfoDataPort as
     //       The SSTInfo can be changed with a new import and could cause
@@ -34,7 +34,7 @@ PortInfoData::PortInfoData(SSTInfoDataPort* SSTInfoPort, PortInfoData::Component
     // Set What side of the component is this port assigned to
     m_AssignedComponentSide = ComponentSide;
     m_AssignedComponentSideSequence = 0;
-    m_DynamicPortControllingParameterName = "";
+    m_DynamicPortControllingPropertyName = "";
 
     // Detirmine if Port is Static or Dynamic
     DetirminePortStaticOrDynamic();
@@ -59,7 +59,7 @@ void PortInfoData::DetirminePortStaticOrDynamic()
 
     // If we get here, then this is a Dynamic Port, but we still have to figure a few things out.
     // Search The Port Name for a "%d" that will indicate that it is a Dynamic Port with no
-    // Associated parameter
+    // Associated Property
     if (m_SSTInfoPortName.contains("%d") == true) {
         // This is a Dynamic Port; We Need to identify that the port is unconfigured
         m_PortIsDynamic = true;
@@ -68,17 +68,17 @@ void PortInfoData::DetirminePortStaticOrDynamic()
         return;
     }
 
-    // If we get here, then this is a Dynamic Port, but it has a assocated Parameter
-    // (a Component Parameter). we need to crack the Parameter from the port name
+    // If we get here, then this is a Dynamic Port, but it has a assocated Property
+    // (a Component Property). we need to crack the Property from the port name
     Index1 = m_SSTInfoPortName.indexOf("%(", 0);
     Index2 = m_SSTInfoPortName.indexOf(")d", Index1);
     // Make sure we found both items
     if ((Index1 >= 0) && (Index2 > Index1)) {
-        // Extract the Parameter Name
+        // Extract the Property Name
         ParamName = m_SSTInfoPortName.mid(Index1 + 2, Index2 - Index1 - 2);
-        m_DynamicPortControllingParameterName = ParamName;
+        m_DynamicPortControllingPropertyName = ParamName;
 
-        // Create the New Port Name With the Parameter stripped out
+        // Create the New Port Name With the Property stripped out
         NewPortName = m_SSTInfoPortName.left(Index1+1) + m_SSTInfoPortName.mid(Index2 + 1);
 
         m_PortIsDynamic = true;
@@ -170,7 +170,7 @@ void PortInfoData::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_SSTInfoPortDesc;
     DataStreamOut << m_SSTInfoPortValidEvents;
 
-    DataStreamOut << m_DynamicPortControllingParameterName;
+    DataStreamOut << m_DynamicPortControllingPropertyName;
     DataStreamOut << m_PortIsConfigured;
     DataStreamOut << m_PortIsDynamic;
     DataStreamOut << (qint32)m_DynamicPortTotalInstances;
@@ -181,8 +181,10 @@ void PortInfoData::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_PortCommentsList;
 }
 
-PortInfoData::PortInfoData(QDataStream& DataStreamIn)
+PortInfoData::PortInfoData(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     qint32 n_AssignedComponentSide;
 
     // Serialization - Load the Data
@@ -195,7 +197,7 @@ PortInfoData::PortInfoData(QDataStream& DataStreamIn)
     DataStreamIn >> m_SSTInfoPortDesc;
     DataStreamIn >> m_SSTInfoPortValidEvents;
 
-    DataStreamIn >> m_DynamicPortControllingParameterName;
+    DataStreamIn >> m_DynamicPortControllingPropertyName;
     DataStreamIn >> m_PortIsConfigured;
     DataStreamIn >> m_PortIsDynamic;
     DataStreamIn >> m_DynamicPortTotalInstances;
@@ -205,5 +207,5 @@ PortInfoData::PortInfoData(QDataStream& DataStreamIn)
     DataStreamIn >> m_PortLatencyValuesList;
     DataStreamIn >> m_PortCommentsList;
 
-    m_AssignedComponentSide = (PortInfoData::ComponentSide)n_AssignedComponentSide;
+    m_AssignedComponentSide = (ComponentSide_enum)n_AssignedComponentSide;
 }

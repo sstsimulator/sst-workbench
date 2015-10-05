@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -26,7 +26,10 @@ ComandAddGraphicItemComponent::ComandAddGraphicItemComponent(GraphicItemComponen
 ComandAddGraphicItemComponent::~ComandAddGraphicItemComponent()
 {
     // Delete the Component
-    delete m_Component;
+    if (m_Component != NULL) {
+        delete m_Component;
+        m_Component = NULL;
+    }
 }
 
 void ComandAddGraphicItemComponent::undo()
@@ -74,7 +77,10 @@ ComandAddGraphicItemText::ComandAddGraphicItemText(GraphicItemText* Text, Wiring
 ComandAddGraphicItemText::~ComandAddGraphicItemText()
 {
     // Delete the Text
-    delete m_Text;
+    if (m_Text != NULL) {
+        delete m_Text;
+        m_Text = NULL;
+    }
 }
 
 void ComandAddGraphicItemText::undo()
@@ -119,8 +125,11 @@ ComandAddGraphicItemWire::ComandAddGraphicItemWire(GraphicItemWire* Wire, Wiring
 
 ComandAddGraphicItemWire::~ComandAddGraphicItemWire()
 {
-    // Delete the Component
-    delete m_Wire;
+    // Delete the Wire
+    if (m_Wire != NULL) {
+        delete m_Wire;
+        m_Wire = NULL;
+    }
 }
 
 void ComandAddGraphicItemWire::undo()

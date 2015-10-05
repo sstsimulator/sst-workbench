@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -18,9 +18,6 @@
 
 class XMLSSTInfoDataHandler :public QXmlDefaultHandler
 {
-    // Enumeration for Identifying the object being processed
-    enum CurrentlyProcessing { NONE, ELEMENT, COMPONENT, INTROSPECTOR, EVENT, MODULE, PARTITIONER, GENERATOR };
-
 public:
     // Constructor / Destructor
     XMLSSTInfoDataHandler(QString InputFilePath, SSTInfoData* ptrSSTInfoData);
@@ -36,25 +33,25 @@ private:
     bool startElement(const QString& namespaceURI, const QString& localName, const QString& qName, const QXmlAttributes& atts );
     bool endElement(const QString & namespaceURI, const QString & localName, const QString & qName);
 
-    SSTInfoDataComponent::ComponentType ConvertStringToComponentType(QString ComponentTypeString);
+    ComponentType_enum ConvertStringToComponentType(QString ComponentTypeString);
     bool GenerateParsingError(QString ObjectTitle, QString ObjectName, QString Index, SSTInfoDataElement* CurrentElement);
 
 private:
-    QString                 m_InputFilePath;
-    SSTInfoData*            m_SSTInfoData;
-    bool                    m_XMLFileValid;
-    bool                    m_XMLFileCorrectVersion;
-    CurrentlyProcessing     m_CurrentlyProcessing;
+    QString                               m_InputFilePath;
+    SSTInfoData*                          m_SSTInfoData;
+    bool                                  m_XMLFileValid;
+    bool                                  m_XMLFileCorrectVersion;
+    XMLParserCurrentlyProcessing_enum     m_CurrentlyProcessing;
 
-    SSTInfoDataElement*      m_CurrentElement;
-    SSTInfoDataComponent*    m_CurrentComponent;
-    SSTInfoDataIntrospector* m_CurrentIntrospector;
-    SSTInfoDataEvent*        m_CurrentEvent;
-    SSTInfoDataModule*       m_CurrentModule;
-    SSTInfoDataPartitioner*  m_CurrentPartitioner;
-    SSTInfoDataGenerator*    m_CurrentGenerator;
-    SSTInfoDataParam*        m_CurrentParam;
-    SSTInfoDataPort*         m_CurrentPort;
+    SSTInfoDataElement*                    m_CurrentElement;
+    SSTInfoDataComponent*                  m_CurrentComponent;
+    SSTInfoDataIntrospector*               m_CurrentIntrospector;
+    SSTInfoDataEvent*                      m_CurrentEvent;
+    SSTInfoDataModule*                     m_CurrentModule;
+    SSTInfoDataPartitioner*                m_CurrentPartitioner;
+    SSTInfoDataGenerator*                  m_CurrentGenerator;
+    SSTInfoDataParam*                      m_CurrentParam;
+    SSTInfoDataPort*                       m_CurrentPort;
 };
 
 ////////////////////////////////////////////////////////

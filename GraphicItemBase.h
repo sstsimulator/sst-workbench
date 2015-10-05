@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -24,15 +24,12 @@ class ItemProperties;
 class GraphicItemBase
 {
 public:
-    // Enumeration for Identifying the item type (NOTE: ITEMTYPE_END MUST ALWAYS BE LAST)
-    enum ItemType { ITEMTYPE_UNDEFINED, ITEMTYPE_COMPONENT, ITEMTYPE_PORT, ITEMTYPE_TEXT, ITEMTYPE_WIRE, ITEMTYPE_WIREHANDLE, ITEMTYPE_WIRELINESEGMENT, ITEMTYPE_END };
-
     // Constructor / Destructor
-    GraphicItemBase(const ItemType itemType);
+    GraphicItemBase(const GraphicItemType_enum itemType);
     virtual ~GraphicItemBase();
 
     // Return the Item Type
-    ItemType GetItemType() const {return m_ItemType;}
+    GraphicItemType_enum GetItemType() const {return m_ItemType;}
 
     // Return the Item Properties
     ItemProperties* GetItemProperties() {return m_Properties;}
@@ -59,8 +56,8 @@ private:
     void DeletePropertiesStructure();
 
 private:
-    ItemType         m_ItemType;
-    ItemProperties*  m_Properties;
+    GraphicItemType_enum  m_ItemType;
+    ItemProperties*       m_Properties;
 };
 
 #endif // GRAPHICITEMBASE_H

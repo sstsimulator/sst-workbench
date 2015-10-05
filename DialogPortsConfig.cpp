@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -132,7 +132,7 @@ void DialogPortsConfig::SavePortData()
     QString           PortName;
     QString           PortValue;
     PortInfoData*     PortInfo;
-    QString           ControllingParam;
+    QString           ControllingProperty;
     QString           NumInstancesStr;
     ItemProperty*     Property;
 
@@ -164,13 +164,13 @@ void DialogPortsConfig::SavePortData()
     for (x = 0; x < m_SelectedComponent->GetPortInfoDataArray().count(); x++) {
         PortInfo = m_SelectedComponent->GetPortInfoDataArray().at(x);
         NumInstancesStr = QString("%1").arg(PortInfo->GetNumCreatedInstances());
-        ControllingParam = PortInfo->GetDynamicPortContollingParameterName();
-        if (ControllingParam.isEmpty() == false) {
+        ControllingProperty = PortInfo->GetDynamicPortContollingPropertyName();
+        if (ControllingProperty.isEmpty() == false) {
             // Get the property set by the controlling property
-            Property = m_SelectedComponent->GetItemProperties()->GetProperty(ControllingParam);
+            Property = m_SelectedComponent->GetItemProperties()->GetProperty(ControllingProperty);
             if (Property != NULL) {
                 Property->SetValue(NumInstancesStr, false);
-                emit m_SelectedComponent->ItemComponentRefreshPropertiesWindowProperty(ControllingParam, NumInstancesStr);
+                emit m_SelectedComponent->ItemComponentRefreshPropertiesWindowProperty(ControllingProperty, NumInstancesStr);
             }
         }
     }

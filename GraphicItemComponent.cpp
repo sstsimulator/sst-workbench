@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,7 +16,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 GraphicItemComponent::GraphicItemComponent(int ComponentIndex, SSTInfoDataComponent* SSTInfoComponent, QMenu* ItemMenu, QColor& ComponentFillColor, const QPointF& startPos, QGraphicsItem* parent /*=0*/)
-    : QObject(), QGraphicsRectItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_COMPONENT)
+    : QObject(), QGraphicsRectItem(parent), GraphicItemBase(ITEMTYPE_COMPONENT)
 {
     int                      x;
     int                      NumPortsFromSSTInfo = 0;
@@ -68,10 +68,10 @@ GraphicItemComponent::GraphicItemComponent(int ComponentIndex, SSTInfoDataCompon
     // Now Create a Port Info Data object for each of the Port and assign them to a side
     for (x = 0; x < NumPortsFromSSTInfo; x++) {
         if (x < m_NumPortsLeftSide) {
-            NewPortInfoData = new PortInfoData(SSTInfoComponent->GetPort(x), PortInfoData::SIDE_LEFT);
+            NewPortInfoData = new PortInfoData(SSTInfoComponent->GetPort(x), SIDE_LEFT);
             NewPortInfoData->SetAssignedComponentSideSequence(LeftSideSequence++);
         } else {
-            NewPortInfoData = new PortInfoData(SSTInfoComponent->GetPort(x), PortInfoData::SIDE_RIGHT);
+            NewPortInfoData = new PortInfoData(SSTInfoComponent->GetPort(x), SIDE_RIGHT);
             NewPortInfoData->SetAssignedComponentSideSequence(RightSideSequence++);
         }
         m_PortInfoDataArray.append(NewPortInfoData);
@@ -91,24 +91,24 @@ GraphicItemComponent::GraphicItemComponent(int ComponentIndex, SSTInfoDataCompon
     setZValue(COMPONENT_ZVALUE);
 
     // Now set the Properties for this Component
-    if (m_ComponentType != SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION) {
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_USERNAME, m_ComponentUserName, "User Assigned Name", ItemProperty::READWRITE, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_UNIQUENAME, m_ComponentUniqueName, "Unique Name For Component", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPPARENTELEM, m_ParentElementName, "Parent Element Name", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPNAME, m_ComponentName, "Base Component Name", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_TYPE, m_ComponentTypeName, "Type of Component", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_DESCRIPTION, m_ComponentDesc, "Component Description", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMMENT, "", "Comment on this Component", ItemProperty::READWRITE, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_RANK, "", "Rank of Component (int)", ItemProperty::READWRITE, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_WEIGHT, "", "Weight of Component (float)", ItemProperty::READWRITE, false);
+    if (m_ComponentType != COMP_SSTSTARTUPCONFIGURATION) {
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_USERNAME, m_ComponentUserName, "User Assigned Name", READWRITE, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_UNIQUENAME, m_ComponentUniqueName, "Unique Name For Component", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPPARENTELEM, m_ParentElementName, "Parent Element Name", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPNAME, m_ComponentName, "Base Component Name", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_TYPE, m_ComponentTypeName, "Type of Component", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_DESCRIPTION, m_ComponentDesc, "Component Description", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMMENT, "", "Comment on this Component", READWRITE, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_RANK, "", "Rank of Component (int)", READWRITE, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_WEIGHT, "", "Weight of Component (float)", READWRITE, PROTECTED, NOTEXPORTABLE);
     } else {
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPNAME, m_ComponentName, "Component Name", ItemProperty::READONLY, false);
-//      GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMMENT, "", "Comment on this Component", ItemProperty::READWRITE, false);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMPNAME, m_ComponentName, "Component Name", READONLY, PROTECTED, NOTEXPORTABLE);
+//      GetItemProperties()->AddProperty(COMPONENT_PROPERTY_INDEX, QString("%1").arg(m_ComponentIndex), "Component Index", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(COMPONENT_PROPERTY_COMMENT, "", "Comment on this Component", READWRITE, PROTECTED, NOTEXPORTABLE);
     }
 
-    // Add the parameters
+    // Add the SSTInfo Param as a Property
     for (int x = 0; x < SSTInfoComponent->GetNumOfParams(); x++) {
         GetItemProperties()->AddProperty(SSTInfoComponent->GetParam(x)->GetParamName(), SSTInfoComponent->GetParam(x)->GetDefaultValue(), SSTInfoComponent->GetParam(x)->GetParamDesc());
     }
@@ -117,8 +117,8 @@ GraphicItemComponent::GraphicItemComponent(int ComponentIndex, SSTInfoDataCompon
     CommonSetup();
 }
 
-GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, QMenu* ItemMenu, QGraphicsItem* parent /*=0*/)
-    : QObject(), QGraphicsRectItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_COMPONENT)
+GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, qint32 ProjectFileVersion, QMenu* ItemMenu, QGraphicsItem* parent /*=0*/)
+    : QObject(), QGraphicsRectItem(parent), GraphicItemBase(ITEMTYPE_COMPONENT)
 {
     int             x;
     qint32          nComponentType;
@@ -155,7 +155,7 @@ GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, QMenu* Ite
     DataStreamIn >> NumPorts;
 
     // Set the Type and Menu
-    m_ComponentType = (SSTInfoDataComponent::ComponentType)nComponentType;
+    m_ComponentType = (ComponentType_enum)nComponentType;
     m_ItemMenu = ItemMenu;
 
     // Figure out what the display name of the component is
@@ -166,7 +166,7 @@ GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, QMenu* Ite
 
     // Load the Port Information
     for (x = 0; x < NumPorts; x++) {
-        NewPortInfoData = new PortInfoData(DataStreamIn);
+        NewPortInfoData = new PortInfoData(DataStreamIn, ProjectFileVersion);
         m_PortInfoDataArray.append(NewPortInfoData);
     }
 
@@ -183,10 +183,25 @@ GraphicItemComponent::GraphicItemComponent(QDataStream& DataStreamIn, QMenu* Ite
     setZValue(NewZValue);
 
     // Load the Component Properties
-    GetItemProperties()->LoadData(DataStreamIn);
+    GetItemProperties()->LoadData(DataStreamIn, ProjectFileVersion);
 
     // Perform Common Setup
     CommonSetup();
+
+    // Do we need to upgrade some of the properties
+    if (ProjectFileVersion == SSTWORKBENCHPROJECTFILEFORMATVER_1_0) {
+        // 2.0 Added a Protected Flag on Properties, we need to upgrade these
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_USERNAME, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_UNIQUENAME, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_COMPPARENTELEM, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_COMPNAME, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_INDEX, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_TYPE, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_DESCRIPTION, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_COMMENT, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_RANK, true);
+        GetItemProperties()->SetPropertyProtected(COMPONENT_PROPERTY_WEIGHT, true);
+    }
 }
 
 GraphicItemComponent::~GraphicItemComponent()
@@ -247,7 +262,7 @@ void GraphicItemComponent::SaveData(QDataStream& DataStreamOut)
     GetItemProperties()->SaveData(DataStreamOut);
 }
 
-QString GraphicItemComponent::GetComponentButtonIconImageName(SSTInfoDataComponent::ComponentType componentType)
+QString GraphicItemComponent::GetComponentButtonIconImageName(ComponentType_enum componentType)
 {
     // STATIC FUNCTION THAT RETURNS A ICON THAT REPRESENTS THE GENERAL COMPONENT TYPE
 
@@ -255,12 +270,12 @@ QString GraphicItemComponent::GetComponentButtonIconImageName(SSTInfoDataCompone
 
     // Provide a resource string that represents the Icon Image of this component
     switch (componentType){
-        case SSTInfoDataComponent::COMP_UNCATEGORIZED          : rtnString =  ":/images/ComponentUncategorized.png" ; break;
-        case SSTInfoDataComponent::COMP_PROCESSOR              : rtnString =  ":/images/ComponentProcessor.png" ; break;
-        case SSTInfoDataComponent::COMP_MEMORY                 : rtnString =  ":/images/ComponentMemory.png" ; break;
-        case SSTInfoDataComponent::COMP_NETWORK                : rtnString =  ":/images/ComponentNetwork.png" ; break;
-        case SSTInfoDataComponent::COMP_SYSTEM                 : rtnString =  ":/images/ComponentSystem.png" ; break;
-        case SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION: rtnString =  ":/images/ComponentSSTConfig.png" ; break;
+        case COMP_UNCATEGORIZED          : rtnString =  ":/images/ComponentUncategorized.png" ; break;
+        case COMP_PROCESSOR              : rtnString =  ":/images/ComponentProcessor.png" ; break;
+        case COMP_MEMORY                 : rtnString =  ":/images/ComponentMemory.png" ; break;
+        case COMP_NETWORK                : rtnString =  ":/images/ComponentNetwork.png" ; break;
+        case COMP_SYSTEM                 : rtnString =  ":/images/ComponentSystem.png" ; break;
+        case COMP_SSTSTARTUPCONFIGURATION: rtnString =  ":/images/ComponentSSTConfig.png" ; break;
         default                                                : rtnString =  ":/images/ComponentUncategorized.png" ; break;
     }
     return rtnString;
@@ -274,7 +289,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
     qreal                          AssignedXPos = 0;
     int                            x;
     GraphicItemPort*               GraphicalPort = NULL;
-    PortInfoData::ComponentSide    PortAssignedSide;
+    ComponentSide_enum             PortAssignedSide;
     int                            PortSideSequence;
     int                            LeftCurrentSequenceCount = 1;
     int                            RightCurrentSequenceCount = 1;
@@ -328,7 +343,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
         PortAssignedSide = GraphicalPort->GetAssignedComponentSide();
 
         // Increment the number of visual ports for the appropriate side
-        if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+        if (PortAssignedSide == SIDE_LEFT) {
             m_NumPortsLeftSide++;
         } else {
             m_NumPortsRightSide++;
@@ -363,7 +378,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
             PortSideSequence = GraphicalPort->GetAssignedComponentSideSequence();
             NumGraphicalDynPorts = GraphicalPort->GetParentPortInfoData()->GetNumCreatedInstances();
 
-            if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+            if (PortAssignedSide == SIDE_LEFT) {
                 if (PortSideSequence == LeftCurrentSequenceCount) {
                     // We found a graphical port that matches the current sequence.
                     // We only increment the CurrentSequenceCount (all dynamic ports hold the same sequence count)
@@ -389,7 +404,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
                 }
             }
 
-            if (PortAssignedSide == PortInfoData::SIDE_RIGHT) {
+            if (PortAssignedSide == SIDE_RIGHT) {
                 if (PortSideSequence == RightCurrentSequenceCount) {
                     // We found a graphical port that matches the current sequence.
                     // We only increment the CurrentSequenceCount (all dynamic ports hold the same sequence count)
@@ -504,7 +519,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
         PortSideSequence = PhysicalPortSideSequenceArray[x];
 
         // Check to see if it is a left or right port we are going to draw, and set its offset
-        if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+        if (PortAssignedSide == SIDE_LEFT) {
             // Drawing a Left Port, set the offset
             YLeftOffset = COMPONENT_PORTYOFFSET * PortSideSequence;
             AssignedYOffset = YLeftOffset;
@@ -520,7 +535,7 @@ void GraphicItemComponent::UpdateVisualLayoutOfComponent()
         GraphicalPort->SetPortPosition(AssignedXPos, AssignedYOffset);
 
         // Add the new Port to the left or right side array, and also set its index
-        if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+        if (PortAssignedSide == SIDE_LEFT) {
             m_GraphicalPortArrayLeftSide.append(GraphicalPort);
         } else {
             m_GraphicalPortArrayRightSide.append(GraphicalPort);
@@ -591,11 +606,11 @@ void GraphicItemComponent::SetMovingPortsMode(bool Flag)
     UpdateVisualLayoutOfComponent();
 }
 
-void GraphicItemComponent::AddModuleParameter(QString ParamName, QString DefaultValue, QString Desc)
+void GraphicItemComponent::AddModuleProperty(QString PropertyName, QString DefaultValue, QString Desc)
 {
-    // Add this module parameter to the Components properties list
+    // Add this module Property to the Components properties list
     // NOTE: Duplicate mames will not be added
-    GetItemProperties()->AddProperty(ParamName, DefaultValue, Desc);
+    GetItemProperties()->AddProperty(PropertyName, DefaultValue, Desc);
 }
 
 void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
@@ -606,7 +621,7 @@ void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
     QPointF                     InitialPos;
     bool                        SwapSides = false;
     bool                        UpdateVisualLayout = false;
-    PortInfoData::ComponentSide CurrentPortSide;
+    ComponentSide_enum          CurrentPortSide;
     int                         CurrentPortSideSequence;
     int                         NewPortSideSequence = 0;
 
@@ -625,14 +640,14 @@ void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
         // Check the Left side limits
         if (UpdatedXPos <= 0) {
             UpdatedXPos = COMPONENT_LEFT_X;
-            if (CurrentPortSide == PortInfoData::SIDE_RIGHT) {
+            if (CurrentPortSide == SIDE_RIGHT) {
                 SwapSides = true;
             }
         }
         // Check the Right side limits
         if (UpdatedXPos > 0) {
             UpdatedXPos = COMPONENT_RIGHT_X;
-            if (CurrentPortSide == PortInfoData::SIDE_LEFT) {
+            if (CurrentPortSide == SIDE_LEFT) {
                 SwapSides = true;
             }
         }
@@ -682,7 +697,7 @@ void GraphicItemComponent::HandleItemPortModedPosition(GraphicItemPort* Port)
     }
 }
 
-void GraphicItemComponent::ReorderPortSequence(GraphicItemPort* CurrentPort, PortInfoData::ComponentSide CurrentSide, bool SwapSides, int CurrentSeq, int NewSeq)
+void GraphicItemComponent::ReorderPortSequence(GraphicItemPort* CurrentPort, ComponentSide_enum CurrentSide, bool SwapSides, int CurrentSeq, int NewSeq)
 {
     int                      x;
     QList<GraphicItemPort*>* GraphicalPortArrayCurSide;
@@ -692,7 +707,7 @@ void GraphicItemComponent::ReorderPortSequence(GraphicItemPort* CurrentPort, Por
     int                      PortSequence;
 
     // Figure out what side we are working on
-    if (CurrentSide == PortInfoData::SIDE_LEFT) {
+    if (CurrentSide == SIDE_LEFT) {
         GraphicalPortArrayCurSide = &m_GraphicalPortArrayLeftSide;
         GraphicalPortArrayNewSide = &m_GraphicalPortArrayRightSide;
     } else {
@@ -747,10 +762,10 @@ void GraphicItemComponent::ReorderPortSequence(GraphicItemPort* CurrentPort, Por
 
         // Now move the Current Port and set its sequence number
         CurrentPort->GetParentPortInfoData()->SetAssignedComponentSideSequence(HighestSequenceProcessed + 1);
-        if (CurrentPort->GetAssignedComponentSide() == PortInfoData::SIDE_LEFT) {
-            CurrentPort->GetParentPortInfoData()->SetAssignedComponentSide(PortInfoData::SIDE_RIGHT);
+        if (CurrentPort->GetAssignedComponentSide() == SIDE_LEFT) {
+            CurrentPort->GetParentPortInfoData()->SetAssignedComponentSide(SIDE_RIGHT);
         } else {
-            CurrentPort->GetParentPortInfoData()->SetAssignedComponentSide(PortInfoData::SIDE_LEFT);
+            CurrentPort->GetParentPortInfoData()->SetAssignedComponentSide(SIDE_LEFT);
         }
     }
 }
@@ -762,12 +777,12 @@ void GraphicItemComponent::CreateComponentDisplayName()
 
     // Figure out The Component Type Name
     switch (m_ComponentType) {
-        case SSTInfoDataComponent::COMP_UNCATEGORIZED:           CompTypeName = COMPONENT_DISPLAY_PREFIX_UNCAT; break;
-        case SSTInfoDataComponent::COMP_PROCESSOR:               CompTypeName = COMPONENT_DISPLAY_PREFIX_PROCESSOR; break;
-        case SSTInfoDataComponent::COMP_MEMORY:                  CompTypeName = COMPONENT_DISPLAY_PREFIX_MEMORY; break;
-        case SSTInfoDataComponent::COMP_NETWORK:                 CompTypeName = COMPONENT_DISPLAY_PREFIX_NETWORK; break;
-        case SSTInfoDataComponent::COMP_SYSTEM:                  CompTypeName = COMPONENT_DISPLAY_PREFIX_SYSTEM; break;
-        case SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION: CompTypeName = COMPONENT_DISPLAY_PREFIX_SSTCONFIG; break;
+        case COMP_UNCATEGORIZED:           CompTypeName = COMPONENT_DISPLAY_PREFIX_UNCAT; break;
+        case COMP_PROCESSOR:               CompTypeName = COMPONENT_DISPLAY_PREFIX_PROCESSOR; break;
+        case COMP_MEMORY:                  CompTypeName = COMPONENT_DISPLAY_PREFIX_MEMORY; break;
+        case COMP_NETWORK:                 CompTypeName = COMPONENT_DISPLAY_PREFIX_NETWORK; break;
+        case COMP_SYSTEM:                  CompTypeName = COMPONENT_DISPLAY_PREFIX_SYSTEM; break;
+        case COMP_SSTSTARTUPCONFIGURATION: CompTypeName = COMPONENT_DISPLAY_PREFIX_SSTCONFIG; break;
         default:                                                 CompTypeName = COMPONENT_DISPLAY_PREFIX_ERROR; break;
     }
 
@@ -781,7 +796,7 @@ void GraphicItemComponent::CreateComponentDisplayName()
     }
 
     // Special Case for SSTCONFIGURATION COMPONENT
-    if (m_ComponentType == SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION) {
+    if (m_ComponentType == COMP_SSTSTARTUPCONFIGURATION) {
         CompDisplayName = m_ComponentName;
     }
 
@@ -802,7 +817,7 @@ void GraphicItemComponent::CreateInitiaLVisualLayoutOfComponent()
     int                            x;
     GraphicItemPort*               NewPort;
     PortInfoData*                  PortInfo;
-    PortInfoData::ComponentSide    PortAssignedSide;
+    ComponentSide_enum             PortAssignedSide;
     int                            PortSideSequence;
     int                            ComponentTextYPos;
 
@@ -833,7 +848,7 @@ void GraphicItemComponent::CreateInitiaLVisualLayoutOfComponent()
         PortSideSequence = PortInfo->GetAssignedComponentSideSequence();
 
         // Check to see if it is a left or right port we are going to draw, and set its offset
-        if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+        if (PortAssignedSide == SIDE_LEFT) {
             // Drawing a Left Port, set the offset
             // When Creating, Dynamic ports always have a single Graphical Port
             YLeftOffset = COMPONENT_PORTYOFFSET * PortSideSequence;
@@ -860,7 +875,7 @@ void GraphicItemComponent::CreateInitiaLVisualLayoutOfComponent()
         PortInfo->SetStartingGraphicalPort(NewPort);
 
         // Add the new Port to the left or right side array, and also set its index
-        if (PortAssignedSide == PortInfoData::SIDE_LEFT) {
+        if (PortAssignedSide == SIDE_LEFT) {
             m_GraphicalPortArrayLeftSide.append(NewPort);
         } else {
             m_GraphicalPortArrayRightSide.append(NewPort);
@@ -1015,7 +1030,7 @@ void GraphicItemComponent::ReconfigureAllGraphicalPorts()
                         NextGraphicalPort = CurrentGraphicalPort->GetNextPeerDynamicPort();
 
                         // Disconnect any wires from this Port and move them based upon the Port side
-                        if (CurrentGraphicalPort->GetAssignedComponentSide() == PortInfoData::SIDE_LEFT) {
+                        if (CurrentGraphicalPort->GetAssignedComponentSide() == SIDE_LEFT) {
                             CurrentGraphicalPort->DisconnectPortFromWire(-PORT_DISCONNECT_MOVE_OFFSET);
                         } else {
                             CurrentGraphicalPort->DisconnectPortFromWire(PORT_DISCONNECT_MOVE_OFFSET);
@@ -1114,6 +1129,7 @@ QVariant GraphicItemComponent::itemChange(GraphicsItemChange change, const QVari
     QPointF NewPos;
     QPointF OldPos;
     bool    SelectedState;
+    QPointF NewPosAdjusted;
 
     // Did this get called to to a Selection Change?
     if (change == ItemSelectedChange && scene()) {
@@ -1121,16 +1137,26 @@ QVariant GraphicItemComponent::itemChange(GraphicsItemChange change, const QVari
         SelectedState = value.toBool();
     }
 
-    // Check to see if the Item has moved enough
+    // If the Position is about to move, see if we need to tweak it
     if (change == QGraphicsItem::ItemPositionChange) {
-        NewPos = value.toPointF();
-        OldPos = pos();
-        if ((OldPos - NewPos).manhattanLength() < m_MoveDelayDistance) {
-            // The mouse has not moved enough, keep the old position
-            return QVariant(OldPos);
+        if (SnapToGrid::IsEnabled() == true) {
+            // Perform a Snap to Grid for the component
+            // Move Component in groupings of Grid Size
+            NewPos = value.toPointF();
+            NewPosAdjusted = SnapToGrid::CheckSnapToGrid(NewPos);
+            return NewPosAdjusted;
         } else {
-            // Clear the delay distance until the mouse is released
-            m_MoveDelayDistance = 0;
+            // Snap to Grid is Disabled,
+            // Check to see if the Item has moved enough
+            NewPos = value.toPointF();
+            OldPos = pos();
+            if ((OldPos - NewPos).manhattanLength() < m_MoveDelayDistance) {
+                // The mouse has not moved enough, keep the old position
+                return QVariant(OldPos);
+            } else {
+                // Clear the delay distance until the mouse is released
+                m_MoveDelayDistance = 0;
+            }
         }
     }
 
@@ -1203,11 +1229,11 @@ void GraphicItemComponent::PropertyChanged(QString& PropName, QString& NewPropVa
     // Get the Number of PortInfo's
     NumPortInfo = m_PortInfoDataArray.count();
 
-    // Walk through all PortInfo's to see if its controlling parameter matches this Property name
+    // Walk through all PortInfo's to see if its controlling Property matches this Property name
     for (x = 0; x < NumPortInfo; x++) {
         PortInfo = m_PortInfoDataArray.at(x);
-        if (PortInfo->GetDynamicPortContollingParameterName() == PropName) {
-            // This parameter controls the number of graphicPorts tied to this PortInfo
+        if (PortInfo->GetDynamicPortContollingPropertyName() == PropName) {
+            // This Property controls the number of graphicPorts tied to this PortInfo
             PortInfo->SetNumTotalInstances(NewPropValue.toInt());
             UpdateLayout = true;
         }

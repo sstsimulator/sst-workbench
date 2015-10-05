@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -23,7 +23,7 @@ class SSTInfoDataParam
 public:
     // Constructor / Destructor
     SSTInfoDataParam(QString ParamName, QString DefaultValue = "");
-    SSTInfoDataParam(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataParam(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataParam();
 
     // Parameter Name, Description and Default Value
@@ -49,7 +49,7 @@ class SSTInfoDataPort
 public:
     // Constructor / Destructor
     SSTInfoDataPort(QString PortName);
-    SSTInfoDataPort(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataPort(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataPort();
 
     // Port Name and Description
@@ -78,19 +78,16 @@ private:
 class SSTInfoDataComponent
 {
 public:
-    // Enumerations for Identifying the component type (NOTE: COMP_END MUST ALWAYS BE LAST)
-    enum ComponentType { COMP_SSTSTARTUPCONFIGURATION, COMP_UNCATEGORIZED, COMP_PROCESSOR, COMP_MEMORY, COMP_NETWORK, COMP_SYSTEM, COMP_END };
-
     // Constructor / Destructor
-    SSTInfoDataComponent(QString ParentElementName, QString ComponentName, ComponentType Type, int NumAllowedInstances = -1);
-    SSTInfoDataComponent(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataComponent(QString ParentElementName, QString ComponentName, ComponentType_enum Type, int NumAllowedInstances = -1);
+    SSTInfoDataComponent(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataComponent();
 
     // Component Names, Type & Description
     QString GetParentElementName() const {return m_ParentElementName;}
     QString GetComponentName() const {return m_ComponentName;}
-    ComponentType GetComponentType() {return m_ComponentType;}
-    static QString GetComponentTypeName(ComponentType Type);
+    ComponentType_enum GetComponentType() {return m_ComponentType;}
+    static QString GetComponentTypeName(ComponentType_enum Type);
     QString GetComponentDesc() const {return m_ComponentDesc;}
     void SetComponentDesc(QString NewDesc) {m_ComponentDesc = NewDesc;}
 
@@ -119,7 +116,7 @@ private:
     QString                      m_ParentElementName;
     QString                      m_ComponentName;
     QString                      m_ComponentDesc;
-    ComponentType                m_ComponentType;
+    ComponentType_enum           m_ComponentType;
     QList<SSTInfoDataParam*>     m_ParamNameList;
     QList<SSTInfoDataPort*>      m_PortNameList;
 
@@ -134,7 +131,7 @@ class SSTInfoDataIntrospector
 public:
     // Constructor / Destructor
     SSTInfoDataIntrospector(QString ParentElementName, QString IntrospectorName);
-    SSTInfoDataIntrospector(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataIntrospector(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataIntrospector();
 
     // Element Name and Description
@@ -171,7 +168,7 @@ class SSTInfoDataEvent
 public:
     // Constructor / Destructor
     SSTInfoDataEvent(QString ParentElementName, QString EventName);
-    SSTInfoDataEvent(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataEvent(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataEvent();
 
     // Event Name & description
@@ -198,7 +195,7 @@ class SSTInfoDataModule
 public:
     // Constructor / Destructor
     SSTInfoDataModule(QString ParentElementName, QString ModuleName);
-    SSTInfoDataModule(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataModule(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataModule();
 
     // Data Name and Description
@@ -235,7 +232,7 @@ class SSTInfoDataPartitioner
 public:
     // Constructor / Destructor
     SSTInfoDataPartitioner(QString ParentElementName, QString PartitionerName);
-    SSTInfoDataPartitioner(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataPartitioner(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataPartitioner();
 
     // Partitioner Name & Description
@@ -262,7 +259,7 @@ class SSTInfoDataGenerator
 public:
     // Constructor / Destructor
     SSTInfoDataGenerator(QString ParentElementName, QString GeneratorName);
-    SSTInfoDataGenerator(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataGenerator(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataGenerator();
 
     // Generator Name & Description
@@ -289,7 +286,7 @@ class SSTInfoDataElement
 public:
     // Constructor / Destructor
     SSTInfoDataElement(QString ElementName);
-    SSTInfoDataElement(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoDataElement(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoDataElement();
 
     // Element Name & Description
@@ -343,7 +340,7 @@ class SSTInfoData
 public:
     // Constructor / Destructor
     SSTInfoData();
-    SSTInfoData(QDataStream& DataStreamIn);  // Only used for serialization
+    SSTInfoData(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
     ~SSTInfoData();
 
     int GetNumOfElements() {return m_ElementList.count();}

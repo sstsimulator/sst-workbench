@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -34,8 +34,10 @@ void SSTInfoDataParam::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_ParamDefaultValue;
 }
 
-SSTInfoDataParam::SSTInfoDataParam(QDataStream& DataStreamIn)
+SSTInfoDataParam::SSTInfoDataParam(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     // Serialiation: Load The General Information
     DataStreamIn >> m_ParamName;
     DataStreamIn >> m_ParamDesc;
@@ -63,8 +65,10 @@ void SSTInfoDataPort::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_PortValidEvents;
 }
 
-SSTInfoDataPort::SSTInfoDataPort(QDataStream& DataStreamIn)
+SSTInfoDataPort::SSTInfoDataPort(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     // Serialiation: Load The General Information
     DataStreamIn >> m_PortName;
     DataStreamIn >> m_PortDesc;
@@ -73,7 +77,7 @@ SSTInfoDataPort::SSTInfoDataPort(QDataStream& DataStreamIn)
 
 //////////////////////////////////////////////////////////////////////
 
-SSTInfoDataComponent::SSTInfoDataComponent(QString ParentElementName, QString ComponentName, SSTInfoDataComponent::ComponentType Type, int NumAllowedInstances /*=-1*/)
+SSTInfoDataComponent::SSTInfoDataComponent(QString ParentElementName, QString ComponentName, ComponentType_enum Type, int NumAllowedInstances /*=-1*/)
 {
      m_ParentElementName = ParentElementName;
      m_ComponentName = ComponentName;
@@ -109,17 +113,17 @@ SSTInfoDataComponent::~SSTInfoDataComponent()
     m_PortNameList.clear();
 }
 
-QString SSTInfoDataComponent::GetComponentTypeName(ComponentType Type)
+QString SSTInfoDataComponent::GetComponentTypeName(ComponentType_enum Type)
 {
     QString rtnString;
 
     switch (Type) {
-        case SSTInfoDataComponent::COMP_UNCATEGORIZED:           rtnString = SSTINFO_COMPONENTTYPESTR_UNCATEGORIZED; break;
-        case SSTInfoDataComponent::COMP_PROCESSOR:               rtnString = SSTINFO_COMPONENTTYPESTR_PROCESSOR; break;
-        case SSTInfoDataComponent::COMP_MEMORY:                  rtnString = SSTINFO_COMPONENTTYPESTR_MEMORY; break;
-        case SSTInfoDataComponent::COMP_NETWORK:                 rtnString = SSTINFO_COMPONENTTYPESTR_NETWORK; break;
-        case SSTInfoDataComponent::COMP_SYSTEM:                  rtnString = SSTINFO_COMPONENTTYPESTR_SYSTEM; break;
-        case SSTInfoDataComponent::COMP_SSTSTARTUPCONFIGURATION: rtnString = SSTINFO_COMPONENTTYPESTR_SSTCONFIG; break;
+        case COMP_UNCATEGORIZED:           rtnString = SSTINFO_COMPONENTTYPESTR_UNCATEGORIZED; break;
+        case COMP_PROCESSOR:               rtnString = SSTINFO_COMPONENTTYPESTR_PROCESSOR; break;
+        case COMP_MEMORY:                  rtnString = SSTINFO_COMPONENTTYPESTR_MEMORY; break;
+        case COMP_NETWORK:                 rtnString = SSTINFO_COMPONENTTYPESTR_NETWORK; break;
+        case COMP_SYSTEM:                  rtnString = SSTINFO_COMPONENTTYPESTR_SYSTEM; break;
+        case COMP_SSTSTARTUPCONFIGURATION: rtnString = SSTINFO_COMPONENTTYPESTR_SSTCONFIG; break;
         default:                                                 rtnString = SSTINFO_COMPONENTTYPESTR_UNDEFINED; break;
     }
     return rtnString;
@@ -182,7 +186,7 @@ void SSTInfoDataComponent::SaveData(QDataStream& DataStreamOut)
     }
 }
 
-SSTInfoDataComponent::SSTInfoDataComponent(QDataStream& DataStreamIn)
+SSTInfoDataComponent::SSTInfoDataComponent(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
     int     x;
     int     ParamCount;
@@ -194,7 +198,7 @@ SSTInfoDataComponent::SSTInfoDataComponent(QDataStream& DataStreamIn)
     DataStreamIn >> m_ComponentName;
     DataStreamIn >> m_ComponentDesc;
     DataStreamIn >> nComponentType;                    // Read Enum in as an Int
-    m_ComponentType = (ComponentType)nComponentType;   // Cast it to the Enum
+    m_ComponentType = (ComponentType_enum)nComponentType;   // Cast it to the Enum
     DataStreamIn >> m_AllowedNumberOfInstances;
 
     // Load the Counts
@@ -204,14 +208,14 @@ SSTInfoDataComponent::SSTInfoDataComponent(QDataStream& DataStreamIn)
     // Load all the Parameters
     for (x = 0; x < ParamCount; x++)
     {
-        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn);
+        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn, ProjectFileVersion);
         AddParam(newParam);
     }
 
     // Load all the Ports
     for (x = 0; x < PortCount; x++)
     {
-        SSTInfoDataPort* newPort = new SSTInfoDataPort(DataStreamIn);
+        SSTInfoDataPort* newPort = new SSTInfoDataPort(DataStreamIn, ProjectFileVersion);
         AddPort(newPort);
     }
 }
@@ -278,7 +282,7 @@ void SSTInfoDataIntrospector::SaveData(QDataStream& DataStreamOut)
     }
 }
 
-SSTInfoDataIntrospector::SSTInfoDataIntrospector(QDataStream& DataStreamIn)
+SSTInfoDataIntrospector::SSTInfoDataIntrospector(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
     int     x;
     int     ParamCount;
@@ -294,7 +298,7 @@ SSTInfoDataIntrospector::SSTInfoDataIntrospector(QDataStream& DataStreamIn)
     // Load all the Parameters
     for (x = 0; x < ParamCount; x++)
     {
-        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn);
+        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn, ProjectFileVersion);
         AddParam(newParam);
     }
 }
@@ -320,8 +324,10 @@ void SSTInfoDataEvent::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_EventDesc;
 }
 
-SSTInfoDataEvent::SSTInfoDataEvent(QDataStream& DataStreamIn)
+SSTInfoDataEvent::SSTInfoDataEvent(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     // Serialiation: Load The General Information
     DataStreamIn >> m_ParentElementName;
     DataStreamIn >> m_EventName;
@@ -389,7 +395,7 @@ void SSTInfoDataModule::SaveData(QDataStream& DataStreamOut)
     }
 }
 
-SSTInfoDataModule::SSTInfoDataModule(QDataStream& DataStreamIn)
+SSTInfoDataModule::SSTInfoDataModule(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
     int     x;
     int     ParamCount;
@@ -405,7 +411,7 @@ SSTInfoDataModule::SSTInfoDataModule(QDataStream& DataStreamIn)
     // Load all the Parameters
     for (x = 0; x < ParamCount; x++)
     {
-        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn);
+        SSTInfoDataParam* newParam = new SSTInfoDataParam(DataStreamIn, ProjectFileVersion);
         AddParam(newParam);
     }
 }
@@ -431,8 +437,10 @@ void SSTInfoDataPartitioner::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_PartitionerDesc;
 }
 
-SSTInfoDataPartitioner::SSTInfoDataPartitioner(QDataStream& DataStreamIn)
+SSTInfoDataPartitioner::SSTInfoDataPartitioner(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     // Serialiation: Load The General Information
     DataStreamIn >> m_ParentElementName;
     DataStreamIn >> m_PartitionerName;
@@ -460,8 +468,10 @@ void SSTInfoDataGenerator::SaveData(QDataStream& DataStreamOut)
     DataStreamOut << m_GeneratorDesc;
 }
 
-SSTInfoDataGenerator::SSTInfoDataGenerator(QDataStream& DataStreamIn)
+SSTInfoDataGenerator::SSTInfoDataGenerator(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     // Serialiation: Load The General Information
     DataStreamIn >> m_ParentElementName;
     DataStreamIn >> m_GeneratorName;
@@ -626,7 +636,7 @@ void SSTInfoDataElement::SaveData(QDataStream& DataStreamOut)
     }
 }
 
-SSTInfoDataElement::SSTInfoDataElement(QDataStream& DataStreamIn)
+SSTInfoDataElement::SSTInfoDataElement(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
     int     x;
     int     ComponentCount;
@@ -651,42 +661,42 @@ SSTInfoDataElement::SSTInfoDataElement(QDataStream& DataStreamIn)
     // Load all the Components
     for (x = 0; x < ComponentCount; x++)
     {
-        SSTInfoDataComponent* newComponent = new SSTInfoDataComponent(DataStreamIn);
+        SSTInfoDataComponent* newComponent = new SSTInfoDataComponent(DataStreamIn, ProjectFileVersion);
         AddComponent(newComponent);
     }
 
     // Load all the Introspectors
     for (x = 0; x < IntrospectorCount; x++)
     {
-        SSTInfoDataIntrospector* newIntrospector = new SSTInfoDataIntrospector(DataStreamIn);
+        SSTInfoDataIntrospector* newIntrospector = new SSTInfoDataIntrospector(DataStreamIn, ProjectFileVersion);
         AddIntrospector(newIntrospector);
     }
 
     // Load all the Events
     for (x = 0; x < EventCount; x++)
     {
-        SSTInfoDataEvent* newEvent = new SSTInfoDataEvent(DataStreamIn);
+        SSTInfoDataEvent* newEvent = new SSTInfoDataEvent(DataStreamIn, ProjectFileVersion);
         AddEvent(newEvent);
     }
 
     // Load all the Modules
     for (x = 0; x < ModuleCount; x++)
     {
-        SSTInfoDataModule* newModule = new SSTInfoDataModule(DataStreamIn);
+        SSTInfoDataModule* newModule = new SSTInfoDataModule(DataStreamIn, ProjectFileVersion);
         AddModule(newModule);
     }
 
     // Load all the Partitioners
     for (x = 0; x < PartitionerCount; x++)
     {
-        SSTInfoDataPartitioner* newPartitioner = new SSTInfoDataPartitioner(DataStreamIn);
+        SSTInfoDataPartitioner* newPartitioner = new SSTInfoDataPartitioner(DataStreamIn, ProjectFileVersion);
         AddPartitioner(newPartitioner);
     }
 
     // Load all the Generators
     for (x = 0; x < GeneratorCount; x++)
     {
-        SSTInfoDataGenerator* newGenerator = new SSTInfoDataGenerator(DataStreamIn);
+        SSTInfoDataGenerator* newGenerator = new SSTInfoDataGenerator(DataStreamIn, ProjectFileVersion);
         AddGenerator(newGenerator);
     }
 
@@ -735,7 +745,7 @@ void SSTInfoData::SaveData(QDataStream& DataStreamOut)
     }
 }
 
-SSTInfoData::SSTInfoData(QDataStream& DataStreamIn)
+SSTInfoData::SSTInfoData(QDataStream& DataStreamIn, qint32 ProjectFileVersion)
 {
     int     x;
     int     ElementCount;
@@ -747,7 +757,7 @@ SSTInfoData::SSTInfoData(QDataStream& DataStreamIn)
     // Load all the Parameters
     for (x = 0; x < ElementCount; x++)
     {
-        SSTInfoDataElement* newElement = new SSTInfoDataElement(DataStreamIn);
+        SSTInfoDataElement* newElement = new SSTInfoDataElement(DataStreamIn, ProjectFileVersion);
         AddElement(newElement);
     }
 }

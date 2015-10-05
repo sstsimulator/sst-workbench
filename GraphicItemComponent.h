@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -34,7 +34,7 @@ public:
 
     // Constructor / Destructor
     GraphicItemComponent(int ComponentIndex, SSTInfoDataComponent* SSTInfoComponent, QMenu* ItemMenu, QColor& ComponentFillColor, const QPointF& startPos, QGraphicsItem* parent = 0);
-    GraphicItemComponent(QDataStream& DataStreamIn, QMenu* ItemMenu, QGraphicsItem* parent = 0);  // Only used for serialization
+    GraphicItemComponent(QDataStream& DataStreamIn, qint32 ProjectFileVersion, QMenu* ItemMenu, QGraphicsItem* parent = 0);  // Only used for serialization
     virtual ~GraphicItemComponent();
 
     // Control of Component Index
@@ -45,7 +45,7 @@ public:
     void SaveData(QDataStream& DataStreamOut);
 
     // Get the name of the Image for the Component Toolbox button (STATIC FUNCTION)
-    static QString GetComponentButtonIconImageName(SSTInfoDataComponent::ComponentType componentType);
+    static QString GetComponentButtonIconImageName(ComponentType_enum componentType);
 
     // Update Visual Layout of the Component and its Ports
     // This will add/remove graphical dynamic ports as necessary
@@ -56,7 +56,7 @@ public:
     QString GetComponentName() {return m_ComponentName;}
     QString GetComponentTypeName() {return m_ComponentTypeName;}
     QString GetComponentDisplayName() {return m_ComponentDisplayName;}
-    SSTInfoDataComponent::ComponentType GetComponentType() const { return m_ComponentType; }
+    ComponentType_enum GetComponentType() const { return m_ComponentType; }
     int GetNumAllowedInstances() const {return m_NumAllowedInstances;}
 
     // Disconnect wires from any connected ports
@@ -77,7 +77,7 @@ public:
     // Module Support
     QStringList GetModulesList() {return m_ComponentModuleNames;}
     void        SetModulesList(QStringList ModulesList) {m_ComponentModuleNames = ModulesList;}
-    void        AddModuleParameter(QString ParamName, QString DefaultValue, QString Desc);
+    void        AddModuleProperty(QString PropertyName, QString DefaultValue, QString Desc);
 
 signals:
     void ItemComponentSetProjectDirty();
@@ -88,7 +88,7 @@ private slots:
     void HandleItemPortModedPosition(GraphicItemPort* Port);
 
 private:
-    void ReorderPortSequence(GraphicItemPort* CurrentPort, PortInfoData::ComponentSide CurrentSide, bool SwapSides, int CurrentSeq, int NewSeq);
+    void ReorderPortSequence(GraphicItemPort* CurrentPort, ComponentSide_enum CurrentSide, bool SwapSides, int CurrentSeq, int NewSeq);
     void CreateComponentDisplayName();
     void CreateInitiaLVisualLayoutOfComponent();
     void SetComponentBoxDimensions(int NumPortsLeftSide, int NumPortsRightSide);
@@ -113,7 +113,7 @@ private:
     void DynamicPropertiesChanged(ItemProperties* ptrExistingProperties);
 
 private:
-    SSTInfoDataComponent::ComponentType m_ComponentType;
+    ComponentType_enum                  m_ComponentType;
     int                                 m_ComponentIndex;
 
     QString                             m_ParentElementName;

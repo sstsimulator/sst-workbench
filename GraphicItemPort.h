@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -51,8 +51,8 @@ public:
     void SetPortPosition(qreal CompEdge_x, qreal CompEdge_y, bool UpdateInitialPoint = true);
 
     // Port Side Settings
-    PortInfoData::ComponentSide GetAssignedComponentSide();
-    int                         GetAssignedComponentSideSequence();
+    ComponentSide_enum  GetAssignedComponentSide();
+    int                 GetAssignedComponentSideSequence();
 
     // Controlling Data from Parents
     PortInfoData* GetParentPortInfoData() {return m_ParentPortInfo;}
@@ -102,7 +102,7 @@ private:
     QString                  m_SSTInfoPortName;       // Name of port from SSTInfo
     QString                  m_SSTInfoPortOriginalName;
 
-    QString                  m_DynamicPortControllingParameterName;
+    QString                  m_DynamicPortControllingPropertyName;
 
     bool                     m_PortIsConfigured;      // Flag that identifies if port is fully Configured
     bool                     m_PortIsDynamic;         // Flag that identifies if port is a Dynamic Port (has a %d)

@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -25,12 +25,9 @@ class GraphicItemPort;
 class PortInfoData
 {
 public:
-    // Enumeration for Identifying what side of the component the port is on
-    enum ComponentSide { SIDE_LEFT, SIDE_RIGHT };
-
     // Constructor / Destructor
-    PortInfoData(SSTInfoDataPort* SSTInfoPort, ComponentSide ComponentSide);
-    PortInfoData(QDataStream& DataStreamIn);  // Only used for serialization
+    PortInfoData(SSTInfoDataPort* SSTInfoPort, ComponentSide_enum ComponentSide);
+    PortInfoData(QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
 
 public:
     // Port Names & Description
@@ -39,8 +36,8 @@ public:
     QString GetSSTInfoPortOriginalName() {return m_SSTInfoPortOriginalName;}
     QString GetSSTInfoPortDesc()         {return m_SSTInfoPortDesc;}
 
-    // Get the Controlling Parameter Name that controls Dynamic Ports (can be empty)
-    QString GetDynamicPortContollingParameterName() {return m_DynamicPortControllingParameterName;}
+    // Get the Controlling Property Name that controls Dynamic Ports (can be empty)
+    QString GetDynamicPortContollingPropertyName() {return m_DynamicPortControllingPropertyName;}
 
     // Port Valid Events
     int GetNumSSTInfoPortValidEvents() {return m_SSTInfoPortValidEvents.count();}
@@ -66,8 +63,8 @@ public:
     void SetNumCreatedInstances(int NumInstances) {m_DynamicPortCreatedInstances = NumInstances;}
 
     // Control of what side of the component this port is assigned to
-    ComponentSide GetAssignedComponentSide() {return m_AssignedComponentSide;}
-    void SetAssignedComponentSide(ComponentSide CompSide) {m_AssignedComponentSide = CompSide;}
+    ComponentSide_enum GetAssignedComponentSide() {return m_AssignedComponentSide;}
+    void SetAssignedComponentSide(ComponentSide_enum CompSide) {m_AssignedComponentSide = CompSide;}
 
     // Get the side sequence that the part is assigned to
     int GetAssignedComponentSideSequence() {return m_AssignedComponentSideSequence;}
@@ -96,26 +93,26 @@ private:
 
 private:
     // Data from the SSTInfoPort
-    QString          m_SSTInfoPortName;
-    QString          m_SSTInfoPortOriginalName;
-    QString          m_SSTInfoPortDesc;
-    QStringList      m_SSTInfoPortValidEvents;
+    QString            m_SSTInfoPortName;
+    QString            m_SSTInfoPortOriginalName;
+    QString            m_SSTInfoPortDesc;
+    QStringList        m_SSTInfoPortValidEvents;
 
-    QString          m_ConfiguredPortName;                   // Name of port after it is configured
-    ComponentSide    m_AssignedComponentSide;                // Assigned Component Side
-    int              m_AssignedComponentSideSequence;        // The order that this port should be drawn on its assigned side
-    GraphicItemPort* m_StartingGraphicalPort;                // Ptr to the first in the series of static or dynamic GraphicalItemPort objects
+    QString            m_ConfiguredPortName;                   // Name of port after it is configured
+    ComponentSide_enum m_AssignedComponentSide;                // Assigned Component Side
+    int                m_AssignedComponentSideSequence;        // The order that this port should be drawn on its assigned side
+    GraphicItemPort*   m_StartingGraphicalPort;                // Ptr to the first in the series of static or dynamic GraphicalItemPort objects
 
-    QString          m_DynamicPortControllingParameterName;  // The Parameter on the Component that controls the size of the dynamic port
-    bool             m_PortIsConfigured;                     // Flag that identifies if port is fully Configured
-    bool             m_PortIsDynamic;                        // Flag that identifies if port is a Dynamic Port (has a %d)
-    int              m_DynamicPortTotalInstances;            // Total number of Instances of Dynamic Ports that the user as defined
-    int              m_DynamicPortCreatedInstances;          // Total number of Instances of Dynamic Ports Currently Created; The difference
-                                                             // from m_DynamicPortTotalInstances is the number of GraphicItemPorts that need
-                                                             // to be created or destroyed.
+    QString            m_DynamicPortControllingPropertyName;  // The Property on the Component that controls the size of the dynamic port
+    bool               m_PortIsConfigured;                     // Flag that identifies if port is fully Configured
+    bool               m_PortIsDynamic;                        // Flag that identifies if port is a Dynamic Port (has a %d)
+    int                m_DynamicPortTotalInstances;            // Total number of Instances of Dynamic Ports that the user as defined
+    int                m_DynamicPortCreatedInstances;          // Total number of Instances of Dynamic Ports Currently Created; The difference
+                                                               // from m_DynamicPortTotalInstances is the number of GraphicItemPorts that need
+                                                               // to be created or destroyed.
 
-    QStringList      m_PortLatencyValuesList;                // List of Latency Values for all ports (Static or Dynamic)
-    QStringList      m_PortCommentsList;                     // List of Coments for all ports (Static or Dynamic)
+    QStringList        m_PortLatencyValuesList;                // List of Latency Values for all ports (Static or Dynamic)
+    QStringList        m_PortCommentsList;                     // List of Coments for all ports (Static or Dynamic)
 };
 
 #endif // PORTINFODATA_H

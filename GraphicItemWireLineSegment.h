@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -25,7 +25,7 @@ class GraphicItemWireLineSegment : public QGraphicsLineItem, public GraphicItemB
 {
 public:
     // Enumerations for Identifying the item type
-    enum Position { SEGPOS_STARTLINE, SEGPOS_MIDDLEVLINE1, SEGPOS_MIDDLEHLINE, SEGPOS_MIDDLEVLINE2, SEGPOS_ENDLINE };
+    enum Position { SEGPOS_STARTHLINE, SEGPOS_MIDDLEVLINE1, SEGPOS_MIDDLEHLINE, SEGPOS_MIDDLEVLINE2, SEGPOS_ENDHLINE };
 
     // Required Virtual function for any QGraphicItem to provide a type value for the qgraphicsitem_cast function
     enum { Type = UserType + ITEMTYPE_WIRELINESEGMENT };

@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////
 
 GraphicItemWireHandle::GraphicItemWireHandle(const QPointF& InitPosition, WirePointPosition WirePointPos, QGraphicsItem* parent /*=0*/)
-    : QGraphicsRectItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_WIREHANDLE)
+    : QGraphicsRectItem(parent), GraphicItemBase(ITEMTYPE_WIREHANDLE)
 {
     m_HandleConnectedPort = NULL;
     m_WirePointPosition = WirePointPos;
@@ -30,6 +30,9 @@ GraphicItemWireHandle::GraphicItemWireHandle(const QPointF& InitPosition, WirePo
     // Update the position and make visible
     UpdatePosition(InitPosition);
     MakeVisible(false);
+
+    // Set Graphic parameters for the Line Handle Items
+    setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 GraphicItemWireHandle::~GraphicItemWireHandle()
@@ -85,11 +88,20 @@ void GraphicItemWireHandle::SetWireHandleConnectedPort(GraphicItemPort* ptrPort)
 QVariant GraphicItemWireHandle::itemChange(GraphicsItemChange change, const QVariant& value)
 {
     bool    SelectedState;
+    QPointF NewPos;
+    QPointF NewPosAdjusted;
 
     // Did this get called to to a Selection Change?
     if (change == ItemSelectedChange && scene()) {
         // value is the selected state
         SelectedState = value.toBool();
+    }
+
+    if (change == QGraphicsItem::ItemPositionChange && scene()) {
+        // Check to see if we need to snap to grid
+        NewPos = value.toPointF();
+        NewPosAdjusted = SnapToGrid::CheckSnapToGrid(NewPos);
+        return NewPosAdjusted;
     }
 
     return QGraphicsItem::itemChange(change, value);

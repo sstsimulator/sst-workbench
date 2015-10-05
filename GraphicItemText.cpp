@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////
 
 GraphicItemText::GraphicItemText(const QFont& InitTextFont, const QColor& InitTextColor, const QPointF& startPos, QGraphicsItem *parent /*=0*/)
-    : QGraphicsTextItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_TEXT)
+    : QGraphicsTextItem(parent), GraphicItemBase(ITEMTYPE_TEXT)
 {
     // Set the Font and Color
     setFont(InitTextFont);
@@ -32,9 +32,11 @@ GraphicItemText::GraphicItemText(const QFont& InitTextFont, const QColor& InitTe
     CommonSetup();
 }
 
-GraphicItemText::GraphicItemText(QDataStream& DataStreamIn, QGraphicsItem *parent /*=0*/)
-    : QGraphicsTextItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_TEXT)
+GraphicItemText::GraphicItemText(QDataStream& DataStreamIn, qint32 ProjectFileVersion, QGraphicsItem *parent /*=0*/)
+    : QGraphicsTextItem(parent), GraphicItemBase(ITEMTYPE_TEXT)
 {
+    Q_UNUSED(ProjectFileVersion)
+
     QPointF NewPos;
     qreal   NewZValue;
     QString NewText;

@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -35,18 +35,27 @@ public:
 
     void SetFlagReturnToSelectAfterWirePlaced(bool flag);
     void SetFlagReturnToSelectAfterTextPlaced(bool flag);
+    void SetFlagAutomaticallyDeleteShortWires(bool flag);
+    void SetFlagDisplayGridEnabled(bool flag);
+    void SetFlagSnapToGridEnabled(bool flag);
+    void SetGridSize(int GridSize);
+
+    ////
 
     bool GetFlagReturnToSelectAfterWirePlaced();
     bool GetFlagReturnToSelectAfterTextPlaced();
+    bool GetFlagAutomaticallyDeleteShortWires();
+    bool GetFlagDisplayGridEnabled();
+    bool GetFlagSnapToGridEnabled();
+    int GetGridSize();
 
 private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
+    void on_BackgroundImageFileSelect_clicked();
 
 private:
     Ui::DialogPreferences* ui;
-    bool m_FlagReturnToSelectAfterWirePlaced;
-    bool m_FlagReturnToSelectAfterTextPlaced;
 };
 
 #endif // DIALOGPREFERENCES_H

@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,14 +16,14 @@
 ////////////////////////////////////////////////////////////
 
 GraphicItemWire::GraphicItemWire(int WireIndex, const QPointF& StartPoint, const QPointF& EndPoint, QGraphicsItem* parent /*=0*/)
-    : QGraphicsObject(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_WIRE)
+    : QGraphicsObject(parent), GraphicItemBase(ITEMTYPE_WIRE)
 {
     m_WireIndex = WireIndex;
 
     // Build the Wire Line Segments
-    m_StartPointLine = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_STARTLINE, GetItemProperties(), this);
+    m_StartPointHLine = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_STARTHLINE, GetItemProperties(), this);
     m_MiddleVLine1   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_MIDDLEVLINE1, GetItemProperties(), this);
-    m_EndPointLine   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_ENDLINE, GetItemProperties(), this);
+    m_EndPointHLine   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_ENDHLINE, GetItemProperties(), this);
 
     // Flag to control if we automatically move the middle line segments
     // Once cleared, we used the saved positions with any updates
@@ -55,9 +55,9 @@ GraphicItemWire::GraphicItemWire(int WireIndex, const QPointF& StartPoint, const
 
     // And draw the initial 3 wires at the start/end points
     // User will later move it via endpoint
-    m_StartPointLine->setLine(InitialLine);
+    m_StartPointHLine->setLine(InitialLine);
     m_MiddleVLine1->setLine(InitialLine);
-    m_EndPointLine->setLine(InitialLine);
+    m_EndPointHLine->setLine(InitialLine);
 
     // Set the Z height (Wires are on top of Components, but lower than Text)
     setZValue(WIRE_SELECTED_ZVALUE);
@@ -69,12 +69,12 @@ GraphicItemWire::GraphicItemWire(int WireIndex, const QPointF& StartPoint, const
     m_EndPointHandle->MakeVisible(false);
 
     // Now set the Properties for this Wire
-    GetItemProperties()->AddProperty(WIRE_PROPERTY_NUMBER, QString("%1").arg(m_WireIndex), "Wire Index", ItemProperty::READONLY, false);
-    GetItemProperties()->AddProperty(WIRE_PROPERTY_COMMENT, "", "Comment on this Wire", ItemProperty::READWRITE, false);
+    GetItemProperties()->AddProperty(WIRE_PROPERTY_NUMBER, QString("%1").arg(m_WireIndex), "Wire Index", READONLY, PROTECTED, NOTEXPORTABLE);
+    GetItemProperties()->AddProperty(WIRE_PROPERTY_COMMENT, "", "Comment on this Wire", READWRITE, PROTECTED, NOTEXPORTABLE);
 }
 
-GraphicItemWire::GraphicItemWire(QDataStream& DataStreamIn, int NewWireIndex /*=-1*/, QGraphicsItem* parent /*=0*/)
-    : QGraphicsObject(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_WIRE)
+GraphicItemWire::GraphicItemWire(QDataStream& DataStreamIn, qint32 ProjectFileVersion, int NewWireIndex /*=-1*/, QGraphicsItem* parent /*=0*/)
+    : QGraphicsObject(parent), GraphicItemBase(ITEMTYPE_WIRE)
 {
     QPointF         NewPos;
     qreal           NewZValue;
@@ -109,9 +109,9 @@ GraphicItemWire::GraphicItemWire(QDataStream& DataStreamIn, int NewWireIndex /*=
     m_WireSelectedState = false;
 
     // Build the Wire Line Segments
-    m_StartPointLine = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_STARTLINE, GetItemProperties(), this);
+    m_StartPointHLine = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_STARTHLINE, GetItemProperties(), this);
     m_MiddleVLine1   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_MIDDLEVLINE1, GetItemProperties(), this);
-    m_EndPointLine   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_ENDLINE, GetItemProperties(), this);
+    m_EndPointHLine   = new GraphicItemWireLineSegment(GraphicItemWireLineSegment::SEGPOS_ENDHLINE, GetItemProperties(), this);
 
     // Initialize the Graphical Pen for the wires
     UpdateWireLinePens();
@@ -128,9 +128,9 @@ GraphicItemWire::GraphicItemWire(QDataStream& DataStreamIn, int NewWireIndex /*=
 
     // And draw the initial 3 wires at the start/end points
     // User will later move it via endpoint
-    m_StartPointLine->setLine(InitialLine);
+    m_StartPointHLine->setLine(InitialLine);
     m_MiddleVLine1->setLine(InitialLine);
-    m_EndPointLine->setLine(InitialLine);
+    m_EndPointHLine->setLine(InitialLine);
 
     // Set the Z height (Wires are on top of Components, but lower than Text)
     setZValue(NewZValue);
@@ -145,10 +145,17 @@ GraphicItemWire::GraphicItemWire(QDataStream& DataStreamIn, int NewWireIndex /*=
     UpdateWireSelectedState(false);
 
     // Load the Component Properties
-    GetItemProperties()->LoadData(DataStreamIn);
+    GetItemProperties()->LoadData(DataStreamIn, ProjectFileVersion);
 
-    // Set the Wire Index incase it changed via the parameter
+    // Set the Wire Index incase it changed via the Property
     GetItemProperties()->SetPropertyValue(WIRE_PROPERTY_NUMBER, QString("%1").arg(m_WireIndex));
+
+    // Do we need to upgrade some of the properties
+    if (ProjectFileVersion == SSTWORKBENCHPROJECTFILEFORMATVER_1_0) {
+        // 2.0 Added a Protected Flag on Properties, we need to upgrade these
+        GetItemProperties()->SetPropertyProtected(WIRE_PROPERTY_NUMBER, true);
+        GetItemProperties()->SetPropertyProtected(WIRE_PROPERTY_COMMENT, true);
+    }
 }
 
 GraphicItemWire::~GraphicItemWire()
@@ -183,7 +190,10 @@ void GraphicItemWire::UpdateStartPointPosition(const QPointF& NewPointLocation)
     // Save off the updated line point
     m_StartPoint = NewPointLocation;
 
-    UpdatePointPositions(m_StartPointLine);
+    // Check to see if we need to snap to grid
+    m_StartPoint = SnapToGrid::CheckSnapToGrid(m_StartPoint);
+
+    UpdatePointPositions(m_StartPointHLine);
 }
 
 void GraphicItemWire::UpdateEndPointPosition(const QPointF& NewPointLocation)
@@ -191,7 +201,10 @@ void GraphicItemWire::UpdateEndPointPosition(const QPointF& NewPointLocation)
     // Save off the updated line point
     m_EndPoint = NewPointLocation;
 
-    UpdatePointPositions(m_EndPointLine);
+    // Check to see if we need to snap to grid
+    m_EndPoint = SnapToGrid::CheckSnapToGrid(m_EndPoint);
+
+    UpdatePointPositions(m_EndPointHLine);
 }
 
 void GraphicItemWire::SetPastePosition(int PasteOffset)
@@ -260,7 +273,7 @@ void GraphicItemWire::SetWireSelected(bool SelectedState)
     // Just select one of the child WireLineSegments and set its
     // select state, this will call back into this parent object
     // to setup change the colors, pens, line style, etc
-    m_EndPointLine->setSelected(SelectedState);
+    m_EndPointHLine->setSelected(SelectedState);
 }
 
 void GraphicItemWire::HandleWireLineSegmentItemChange(const QPointF& NewPos, GraphicItemWireLineSegment* CallingWireLineSegment, GraphicsItemChange change, const QVariant& value)
@@ -473,13 +486,20 @@ void GraphicItemWire::UpdateWireLineSegmentPositions(const QPointF& NewPos, Grap
     m_MiddleStartVertical1Point = QPointF(VerticalDrawPoint_x, m_StartPoint.y());
     m_MiddleEndVertical1Point = QPointF(VerticalDrawPoint_x, m_EndPoint.y());
 
+    // Check to see if we need to snap to grid
+    m_MiddleStartVertical1Point = SnapToGrid::CheckSnapToGrid(m_MiddleStartVertical1Point);
+    m_MiddleEndVertical1Point = SnapToGrid::CheckSnapToGrid(m_MiddleEndVertical1Point);
+
+    m_StartPoint = SnapToGrid::CheckSnapToGrid(m_StartPoint);
+    m_EndPoint = SnapToGrid::CheckSnapToGrid(m_EndPoint);
+
     QLineF Line1 = QLineF(m_StartPoint, m_MiddleStartVertical1Point);
     QLineF Line2 = QLineF(m_MiddleStartVertical1Point, m_MiddleEndVertical1Point);
     QLineF Line3 = QLineF(m_MiddleEndVertical1Point, m_EndPoint);
 
-    m_StartPointLine->setLine(Line1);
+    m_StartPointHLine->setLine(Line1);
     m_MiddleVLine1->setLine(Line2);
-    m_EndPointLine->setLine(Line3);
+    m_EndPointHLine->setLine(Line3);
 
     // Set the project dirty
     emit ItemWireSetProjectDirty();
@@ -521,9 +541,9 @@ void GraphicItemWire::UpdateWireLinePens()
 {
     m_CurrentPen = QPen(m_CurrentWireColor, WIRE_PEN_WIDTH, m_CurrentPenStyle, Qt::RoundCap, Qt::RoundJoin);
 
-    m_StartPointLine->setPen(m_CurrentPen);
+    m_StartPointHLine->setPen(m_CurrentPen);
     m_MiddleVLine1->setPen(m_CurrentPen);
-    m_EndPointLine->setPen(m_CurrentPen);
+    m_EndPointHLine->setPen(m_CurrentPen);
 }
 
 QPainterPath GraphicItemWire::shape() const
@@ -533,9 +553,9 @@ QPainterPath GraphicItemWire::shape() const
     QPainterPath path;
 
     // Return the path of the WireLineSegments
-    path.addPath(m_StartPointLine->shape());
+    path.addPath(m_StartPointHLine->shape());
     path.addPath(m_MiddleVLine1->shape());
-    path.addPath(m_EndPointLine->shape());
+    path.addPath(m_EndPointHLine->shape());
 
     return path;
 }
@@ -549,9 +569,9 @@ QRectF GraphicItemWire::boundingRect() const
     QRectF RtnRect;
 
     // Return the union of the WireLineSegments
-    RtnRect = RtnRect.united(m_StartPointLine->boundingRect());
+    RtnRect = RtnRect.united(m_StartPointHLine->boundingRect());
     RtnRect = RtnRect.united(m_MiddleVLine1->boundingRect());
-    RtnRect = RtnRect.united(m_EndPointLine->boundingRect());
+    RtnRect = RtnRect.united(m_EndPointHLine->boundingRect());
 
     return RtnRect;
 }

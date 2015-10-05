@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -20,40 +20,25 @@
 
 //////////////////////////////////////////////////////////////
 
-class ComponentToolButton : public QToolButton
+class ComponentTreeWidget : public QTreeWidget
 {
     Q_OBJECT
 public:
     // Constructor / Destructor
-    explicit ComponentToolButton(SSTInfoDataComponent::ComponentType ComponentType, QWidget* parent = 0);
+    explicit ComponentTreeWidget(QWidget* parent = 0);
 
 private:
     // Drag & Drop Handling
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
 
 private:
-    QPointF                             m_DragStartPosition;
-    SSTInfoDataComponent::ComponentType m_ComponentType;
+    QPointF               m_DragStartPosition;
+    SSTInfoDataComponent* m_DraggingComponent;
+    ComponentType_enum    m_DraggingComponentType;
+    QTreeWidgetItem*      m_DraggingItem;
 };
-
-////////////////////////////////////////////////////////////
-
-class ComponentToolBox : public QToolBox
-{
-    Q_OBJECT
-public:
-    // Constructor / Destructor
-    explicit ComponentToolBox(QWidget* parent = 0);
-
-signals:
-    void ComponentToolboxResized();
-
-private:
-    // Resize Handling
-    void resizeEvent(QResizeEvent* event);
-};
-
 
 ////////////////////////////////////////////////////////////
 
@@ -61,23 +46,23 @@ class WindowComponentToolBox : public QFrame
 {
     Q_OBJECT
 
-private:
-    enum SortType {SORTBY_ELEMENT, SORTBY_TYPE};
-
 public:
     // Constructor / Destructor
     explicit WindowComponentToolBox(QWidget* parent = 0);
     ~WindowComponentToolBox();
 
     // Uncheck All ToolBox buttons in the current group
-    void UncheckAllCurrentGroupButtons();
+    void UnselectAllToolboxComponentItems();
 
     // Load SSTInfo data into Toolbox
-    SSTInfoData* GetSSTInfoData() {return m_SSTInfoData;}
     void LoadSSTInfo(SSTInfoData* SSTInfoData, bool AddSSTConfigComponent);
 
+    // Info on the SSTInfo
+    SSTInfoData* GetSSTInfoData() {return m_SSTInfoData;}
+    bool IsSSTInfoDataLoaded() {return (m_SSTInfoData != NULL);}
+
 signals:
-    void ComponentToolboxButtonPressed(SSTInfoDataComponent* ptrComponent);
+    void ComponentToolboxItemPressed(SSTInfoDataComponent* ptrComponent);
 
 private:
     // Clear the ToolBox
@@ -86,33 +71,23 @@ private:
     // Add the SST Configuration Component to the SSTInfo Structures
     void Add_SSTConfigComponentToSSTInfo();
 
-    QButtonGroup* GetCurrentButtonGroup(){return m_CurrentButtonGroup;}
-
-    QWidget* CreateItemComponentButtonWidget(QButtonGroup* ButtonGroup, const QString& text, SSTInfoDataComponent* Component);
-    QWidget* CreateButtonGroupWidgetByElement(SSTInfoDataElement* ElementData);
-    QWidget* CreateButtonGroupWidgetByComponentType(SSTInfoDataComponent::ComponentType Type);
-
     void PopulateToolBox();
 
 private slots:
-    void HandleComponentToolboxButtonGroupPressed(int id);
-    void HandleComponentToolboxButtonGroupToggled(int id, bool checked);
-    void HandleChangedButtonGroup(int index);
     void HandleSortByButtonClicked(bool checked);
-    void HandleComponentToolboxResized();
+    void HandleComponentTreeItemPressed(QTreeWidgetItem* item, int column);
+    void HandleComponentTreeItemCollapsed(QTreeWidgetItem* item);
 
 private:
     SSTInfoData*         m_SSTInfoData;
-    QButtonGroup*        m_CurrentButtonGroup;
-    QList<QButtonGroup*> m_ButtonGroupList;
-
     QGroupBox*           m_SortByGroupBox;
-    ComponentToolBox*    m_ToolboxWidget;
+
+    ComponentTreeWidget* m_ToolboxTreeWidget;
 
     QRadioButton*        m_RadioSortByType;
     QRadioButton*        m_RadioSortByElement;
 
-    SortType             m_SortByFlag;
+    SortType_enum        m_SortByFlag;
 };
 
 #endif // WINDOWCOMPONENTTOOLBOX_H

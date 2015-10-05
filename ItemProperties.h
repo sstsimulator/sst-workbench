@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -25,11 +25,9 @@ class ItemProperties;
 class ItemProperty
 {
 public:
-    enum RO_FLAG { READWRITE, READONLY };
-
     // Constructor / Destructor
-    ItemProperty(ItemProperties* ParentItemProperties, QString PropertyName, QString OrigPropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, bool DynamicFlag, QString ControllingParam);
-    ItemProperty(ItemProperties* ParentItemProperties, QDataStream& DataStreamIn);  // Only used for serialization
+    ItemProperty(ItemProperties* ParentItemProperties, QString PropertyName, QString OrigPropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Protected, bool Exportable, bool DynamicFlag, QString ControllingProperty);
+    ItemProperty(ItemProperties* ParentItemProperties, QDataStream& DataStreamIn, qint32 ProjectFileVersion);  // Only used for serialization
 
     ~ItemProperty();
 
@@ -52,11 +50,15 @@ public:
     void SetReadOnly(bool flag) {m_ReadOnly = flag;}
     bool GetReadOnly() {return m_ReadOnly;}
 
+    // Property Protected Flag
+    void SetProtected(bool flag) {m_Protected = flag;}
+    bool GetProtected() {return m_Protected;}
+
     // Property Exportable Flag
     void SetExportable(bool flag) {m_Exportable = flag;}
     bool GetExportable() {return m_Exportable;}
 
-    // Dynamic Parameter Settings
+    // Dynamic Property Settings
     bool GetDynamicFlag() {return m_DynamicFlag;}
     QString GetDefaultValue() {return m_DefaultValue;}
     QString GetOriginalPropertyName() {return m_OriginalPropertyName;}
@@ -68,17 +70,18 @@ public:
     void SaveData(QDataStream& DataStreamOut);
 
 private:
-    QString          m_PropertyName;
-    QString          m_OriginalPropertyName;
-    QString          m_PropertyValue;
-    QString          m_DefaultValue;
-    QString          m_PropertyDesc;
-    bool             m_ReadOnly;
-    bool             m_Exportable;
-    bool             m_DynamicFlag;
-    QString          m_ControllingProperty;
-    int              m_NumInstances;
-    ItemProperties*  m_ParentProperties;
+    QString          m_PropertyName;           // The Displayed Property Name after
+    QString          m_OriginalPropertyName;   // Orig Prop Name from SSTInfo.xml
+    QString          m_PropertyValue;          // Property Value
+    QString          m_DefaultValue;           // Default Value from SSTInfo.xml
+    QString          m_PropertyDesc;           // Property Description
+    bool             m_ReadOnly;               // Is Property Value Read Only
+    bool             m_Protected;              // Is Property Cannot be Deleted
+    bool             m_Exportable;             // Is Property Exportable to Python
+    bool             m_DynamicFlag;            // Is Property Dynamic
+    QString          m_ControllingProperty;    // If Dynamic, what is the controlling Property
+    int              m_NumInstances;           // Number of instances of a Dynamic Property
+    ItemProperties*  m_ParentProperties;       // Owning list of Properties
 };
 
 ////////////////////////////////////////////////////////////
@@ -91,7 +94,11 @@ public:
     ~ItemProperties();
 
     // Add a new property
-    void AddProperty(QString PropertyName, QString PropertyValue = "", QString PropertyDesc = "", bool ReadOnly = false, bool Exportable = true);
+    void AddProperty(QString PropertyName, QString PropertyValue = "", QString PropertyDesc = "", bool ReadOnly = false, bool Protected = false, bool Exportable = true);
+
+    // Remove a Property
+    void RemoveProperty(QString PropertyName);
+    void RemoveProperty(int Index);
 
     // Get the Graphic Item base that is parent to this object
     GraphicItemBase* GetParentGraphicItemBase() {return m_ParentGraphicItemBase;}
@@ -102,6 +109,24 @@ public:
     // Set a Property Value
     void SetPropertyValue(QString PropertyName, QString PropertyValue);
     void SetPropertyValue(int Index, QString PropertyValue);
+
+    // Set a Property Desc
+    void SetPropertyDesc(QString PropertyName, QString PropertyDesc);
+    void SetPropertyDesc(int Index, QString PropertyDesc);
+
+    // Change a Property Name
+    void ChangePropertyName(QString OldName, QString NewName);
+    void ChangePropertyName(int Index, QString NewName);
+
+    // Set Property Flags
+    void SetPropertyReadOnly(QString PropertyName, bool Flag);
+    void SetPropertyReadOnly(int Index, bool Flag);
+
+    void SetPropertyProtected(QString PropertyName, bool Flag);
+    void SetPropertyProtected(int Index, bool Flag);
+
+    void SetPropertyExportable(QString PropertyName, bool Flag);
+    void SetPropertyExportable(int Index, bool Flag);
 
     // Get a Property Value
     int GetPropertyIndex(QString PropertyName);
@@ -114,7 +139,7 @@ public:
 
     // Serialization
     void SaveData(QDataStream& DataStreamOut);
-    void LoadData(QDataStream& DataStreamIn);
+    void LoadData(QDataStream& DataStreamIn, qint32 ProjectFileVersion);
 
     // Called only when a property changed
     void PropertyChanged(QString PropName, QString PropNewValue, bool PerformCallback);
@@ -122,8 +147,8 @@ public:
     void AdjustDynamicPropertyInList(QString PropertyName, int NumInstances, bool PerformCallback);
 
 private:
-    void AddStaticProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable);
-    void AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Exportable, QString ControllingParam);
+    void AddStaticProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Protected, bool Exportable);
+    void AddDynamicProperty(QString PropertyName, QString PropertyValue, QString PropertyDesc, bool ReadOnly, bool Protected, bool Exportable, QString ControllingProperty);
     bool IsPropertyNameNotInList(QString PropertyName);
 
 private:

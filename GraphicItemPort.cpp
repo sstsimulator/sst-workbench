@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,14 +16,14 @@
 ////////////////////////////////////////////////////////////
 
 GraphicItemPort::GraphicItemPort(PortInfoData* ParentPortInfo, QGraphicsItem* parent /*=0*/)
-    : QObject(), QGraphicsEllipseItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_PORT)
+    : QObject(), QGraphicsEllipseItem(parent), GraphicItemBase(ITEMTYPE_PORT)
 {
     // Save off the SSTInfoPort Information
     m_ParentPortInfo = ParentPortInfo;
     m_PortName = ParentPortInfo->GetSSTInfoPortName();
     m_PortDesc = ParentPortInfo->GetSSTInfoPortDesc();
     m_SSTInfoPortOriginalName = ParentPortInfo->GetSSTInfoPortOriginalName();
-    m_DynamicPortControllingParameterName = ParentPortInfo->GetDynamicPortContollingParameterName();
+    m_DynamicPortControllingPropertyName = ParentPortInfo->GetDynamicPortContollingPropertyName();
 
     // Initial Port Name information
     m_SSTInfoPortName = m_PortName;
@@ -78,21 +78,21 @@ GraphicItemPort::GraphicItemPort(PortInfoData* ParentPortInfo, QGraphicsItem* pa
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 
     // Now set the Properties for this Port
-    GetItemProperties()->AddProperty(PORT_PROPERTY_CONFIGURED_NAME, m_ConfiguredPortName, "Port Name", ItemProperty::READONLY, false);
+    GetItemProperties()->AddProperty(PORT_PROPERTY_CONFIGURED_NAME, m_ConfiguredPortName, "Port Name", READONLY, PROTECTED, NOTEXPORTABLE);
     if (ParentPortInfo->IsPortDynamic() == true) {
         // Show the Generic Name only if the port is Dynamic
-        GetItemProperties()->AddProperty(PORT_PROPERTY_GENERIC_NAME, m_SSTInfoPortName, "Generic Port Name", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(PORT_PROPERTY_ORIG_NAME, m_SSTInfoPortOriginalName, "Original Port Name", ItemProperty::READONLY, false);
+        GetItemProperties()->AddProperty(PORT_PROPERTY_GENERIC_NAME, m_SSTInfoPortName, "Generic Port Name", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(PORT_PROPERTY_ORIG_NAME, m_SSTInfoPortOriginalName, "Original Port Name", READONLY, PROTECTED, NOTEXPORTABLE);
     }
-    GetItemProperties()->AddProperty(PORT_PROPERTY_DESCRIPTION, m_PortDesc, "Port Description", ItemProperty::READONLY, false);
+    GetItemProperties()->AddProperty(PORT_PROPERTY_DESCRIPTION, m_PortDesc, "Port Description", READONLY, PROTECTED, NOTEXPORTABLE);
     if (ParentPortInfo->IsPortDynamic() == true) {
-        GetItemProperties()->AddProperty(PORT_PROPERTY_PORTTYPE, PORT_TYPE_DYNAMIC, "Port Type", ItemProperty::READONLY, false);
-        GetItemProperties()->AddProperty(PORT_PROPERTY_CONTROLPARAM, m_DynamicPortControllingParameterName, "Component Parameter Controlling this Dynamic Port", ItemProperty::READONLY, false);
+        GetItemProperties()->AddProperty(PORT_PROPERTY_PORTTYPE, PORT_TYPE_DYNAMIC, "Port Type", READONLY, PROTECTED, NOTEXPORTABLE);
+        GetItemProperties()->AddProperty(PORT_PROPERTY_CONTROLPROP, m_DynamicPortControllingPropertyName, "Component Property Controlling this Dynamic Port", READONLY, PROTECTED, NOTEXPORTABLE);
     } else {
-        GetItemProperties()->AddProperty(PORT_PROPERTY_PORTTYPE, PORT_TYPE_STATIC, "Port Type", ItemProperty::READONLY, false);
+        GetItemProperties()->AddProperty(PORT_PROPERTY_PORTTYPE, PORT_TYPE_STATIC, "Port Type", READONLY, PROTECTED, NOTEXPORTABLE);
     }
-    GetItemProperties()->AddProperty(PORT_PROPERTY_COMMENT, "0", "Comment on this Port", ItemProperty::READWRITE, false);
-    GetItemProperties()->AddProperty(PORT_PROPERTY_LATENCY, "0", "The Latency for this Port", ItemProperty::READWRITE, false);
+    GetItemProperties()->AddProperty(PORT_PROPERTY_COMMENT, "0", "Comment on this Port", READWRITE, PROTECTED, NOTEXPORTABLE);
+    GetItemProperties()->AddProperty(PORT_PROPERTY_LATENCY, "0", "The Latency for this Port", READWRITE, PROTECTED, NOTEXPORTABLE);
 
     m_PortDynamicSequenceID = 0;
 
@@ -128,7 +128,7 @@ void GraphicItemPort::SetPortPosition(qreal CompEdge_x, qreal CompEdge_y, bool U
     m_StartPoint = QPointF(CompEdge_x, CompEdge_y);
 
     // Figure out the End Point based on the StartPoint and what side we are drawing on
-    if (GetAssignedComponentSide() == PortInfoData::SIDE_LEFT)
+    if (GetAssignedComponentSide() == SIDE_LEFT)
     {
         m_EndPoint = QPointF(CompEdge_x - PORT_LINE_LENGTH, CompEdge_y);
     } else {
@@ -147,7 +147,7 @@ void GraphicItemPort::SetPortPosition(qreal CompEdge_x, qreal CompEdge_y, bool U
     UpdatePortPosition();
 }
 
-PortInfoData::ComponentSide GraphicItemPort::GetAssignedComponentSide()
+ComponentSide_enum GraphicItemPort::GetAssignedComponentSide()
 {
     return m_ParentPortInfo->GetAssignedComponentSide();
 }
@@ -240,7 +240,7 @@ void GraphicItemPort::UpdatePortPosition()
     setPos(m_ConnectionPoint);
 
     // Draw the Line from the edge of the component to the edge of the Port Ellipse
-    if (GetAssignedComponentSide() == PortInfoData::SIDE_LEFT) {
+    if (GetAssignedComponentSide() == SIDE_LEFT) {
         LineEndEdgeOffset = PORT_LINE_END_EDGE_OFFSET;
         LineStartEdgeOffset = -PORT_LINE_START_EDGE_OFFSET;
     } else {
@@ -254,7 +254,7 @@ void GraphicItemPort::UpdatePortPosition()
                          mapFromParent(m_EndPoint).x() + LineEndEdgeOffset, mapFromParent(m_EndPoint).y());
 
     // Set Port Name Text Position
-    if (GetAssignedComponentSide() == PortInfoData::SIDE_LEFT)
+    if (GetAssignedComponentSide() == SIDE_LEFT)
     {
         m_PortNameText->setPos(mapFromParent(m_EndPoint).x() - 5, mapFromParent(m_EndPoint).y() + PORT_NAME_Y_OFFSET);
     } else {

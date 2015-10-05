@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -17,7 +17,8 @@
 #include "GlobalIncludes.h"
 
 #include "ItemProperties.h"
-#include "DialogParametersConfig.h"
+#include "DialogDynamicPropertiesConfig.h"
+#include "DialogAddEditProperty.h"
 
 ////////////////////////////////////////////////////////////
 
@@ -32,24 +33,38 @@ public:
 
     void SetGraphicItemProperties(ItemProperties* Properties);
     void ClearProperiesWindow();
+    void RefreshAllProperties();
     void RefreshProperiesWindowProperty(QString PropertyName, QString NewPropertyValue);
 
 private:
-    void AddPropertyData(QString Property, QString Value, QString Desc, bool ReadOnly = false);
+    void AddPropertyData(ItemProperty* Property);
+    QString GetPropertyName(int row);
+    QString GetPropertyValue(int row);
+    QString GetPropertyDesc(int row);
+    bool IsPropertyReadOnly(int row);
+    bool IsPropertyProtected(int row);
 
 public slots:
     void HandleCellChanged(int, int);
+    void HandleSelectionChanged();
     void HandleItemDoubleClicked(QTableWidgetItem* Item);
+    void HandleBtnAddPropertyClicked();
+    void HandleBtnRemovePropertyClicked();
+    void HandleBtnEditPropertyClicked();
 
 signals:
 
 private:
-    QGroupBox*              m_PropertiesGroupBox;
-    QTableWidget*           m_PropertiesTable;
+    QGroupBox*                     m_PropertiesGroupBox;
+    QTableWidget*                  m_PropertiesTable;
+    QToolButton*                   m_BtnAddProperty;
+    QToolButton*                   m_BtnRemoveProperty;
+    QToolButton*                   m_BtnEditProperty;
 
-    ItemProperties*         m_CurrentProperties;
-    bool                    m_PopulatingWindow;
-    DialogParametersConfig* m_ConfigureDynamicParameter;
+    ItemProperties*                m_CurrentProperties;
+    bool                           m_PopulatingWindow;
+    DialogDynamicPropertiesConfig* m_ConfigureDynamicProperties;
+    DialogAddEditProperty*         m_AddEditProperty;
 };
 
 #endif // WINDOWITEMPROPERTIES_H

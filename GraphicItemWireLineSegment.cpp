@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////
 
 GraphicItemWireLineSegment::GraphicItemWireLineSegment(Position LineSegPosition, ItemProperties* ParentProperties, QGraphicsItem* parent/*=0*/)
-    : QGraphicsLineItem(parent), GraphicItemBase(GraphicItemBase::ITEMTYPE_WIRELINESEGMENT)
+    : QGraphicsLineItem(parent), GraphicItemBase(ITEMTYPE_WIRELINESEGMENT)
 
 {
     // Point this objects properties to the parent's properties
@@ -52,7 +52,7 @@ void GraphicItemWireLineSegment::SaveData(QDataStream& DataStreamOut)
 
 bool GraphicItemWireLineSegment::IsWireLineAMiddleSegment()
 {
-    return ( (m_LineSegPosition != SEGPOS_STARTLINE) && (m_LineSegPosition != SEGPOS_ENDLINE));
+    return ( (m_LineSegPosition != SEGPOS_STARTHLINE) && (m_LineSegPosition != SEGPOS_ENDHLINE));
 }
 
 void GraphicItemWireLineSegment::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget /*=0*/)
@@ -101,11 +101,11 @@ QVariant GraphicItemWireLineSegment::itemChange(GraphicsItemChange change, const
 
         // Depending upon what line segment, control what direction (Horizontal or Vertical) that it can move
         switch (m_LineSegPosition) {
-            case SEGPOS_STARTLINE :     FinalPos = OldPos; break;                           // STARTLINE cannot change position
+            case SEGPOS_STARTHLINE :    FinalPos = OldPos; break;                           // STARTLINE cannot change position
             case SEGPOS_MIDDLEVLINE1 :  FinalPos = QPointF(NewPos.x(), OldPos.y()); break;  // Can only move in the X direction (Horizontal)
             case SEGPOS_MIDDLEHLINE :   FinalPos = QPointF(OldPos.x(), NewPos.y()); break;  // Can only move in the Y direction (Vertical)
             case SEGPOS_MIDDLEVLINE2 :  FinalPos = QPointF(NewPos.x(), OldPos.y()); break;  // Can only move in the X direction (Horizontal)
-            case SEGPOS_ENDLINE :       FinalPos = OldPos; break;                           // ENDLINE cannot change position
+            case SEGPOS_ENDHLINE :      FinalPos = OldPos; break;                           // ENDLINE cannot change position
         }
 
         // Call the Parent's handler, to update the position of the peer Line Segments

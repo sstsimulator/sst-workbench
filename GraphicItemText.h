@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -31,7 +31,7 @@ public:
 
     // Constructor / Destructor
     GraphicItemText(const QFont& InitTextFont, const QColor& InitTextColor, const QPointF& startPos, QGraphicsItem* parent = 0);
-    GraphicItemText(QDataStream& DataStreamIn, QGraphicsItem* parent = 0);  // Only used for serialization
+    GraphicItemText(QDataStream& DataStreamIn, qint32 ProjectFileVersion, QGraphicsItem* parent = 0);  // Only used for serialization
     virtual ~GraphicItemText();
 
     // Serialization

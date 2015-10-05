@@ -29,5 +29,10 @@
         <file>images/Redo.png</file>
         <file>images/SST_Single_S_Logo.png</file>
         <file>images/ProjectNew.png</file>
+        <file>images/PropertyAdd.png</file>
+        <file>images/PropertyDelete.png</file>
+        <file>images/PropertyDlgLocked.png</file>
+        <file>images/PropertyDlgUnlocked.png</file>
+        <file>images/PropertyEdit.png</file>
     </qresource>
 </RCC>

@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -15,8 +15,10 @@
 #define MAINWINDOW_H
 
 #include "GlobalIncludes.h"
+#include <QtPrintSupport>
 
 #include "WiringScene.h"
+#include "WiringView.h"
 #include "WindowItemProperties.h"
 #include "WindowComponentToolbox.h"
 
@@ -44,36 +46,28 @@ private:
     // Project Dirty flag
     void SetProjectDirty(bool DirtyFlag = true);
     bool IsProjectDirty();
-    void UpdateDisplayBasedUponDirtyStatus();
 
     // Set the Wiring Window Tab Title
-    void SetMainTabTitle(QString Title);
-    void SetMainTabTitle(QFileInfo FileInfo);
-
-    // Info on the scene
-    bool IsSceneEmpty();
-    bool AreSceneComponentsSelected();
+    void SetMainWindowTitle(QString Title);
+    void SetMainWindowTitle(QFileInfo FileInfo);
 
     // Set the Font
     void SetFontControls(const QFont& font);
 
     // Control the Scene display
-    void SetSceneScaleByPercent(double ScalePercent);
-    void UpdateSceneScaleDisplay();
+    void SetCurrentViewScaleByPercent(double ScalePercent);
+    void UpdateCurrentViewScaleDisplay();
 
     // Handling of Persistant Storage
     void SavePersistentStorage();
     void RestorePersistentStorage();
 
-    // Handling of Project Data (Serialization)
-    bool SaveProjectData(QString ProjectFilePathName);
-    bool LoadProjectData(QString ProjectFilePathName);
-
     // Get access to the Persistent Settings object
     QSettings* GetPersistentSettings() {return m_PersistentSettings;}
 
-    // Do we have SSTInfoData available
-    bool IsSSTInfoDataLoaded();
+    // Handling of Project Data (Serialization)
+    bool SaveProjectData(QString ProjectFilePathName);
+    bool LoadProjectData(QString ProjectFilePathName);
 
     // Build up the Menus and Toolbar buttons the user can press for Actions
     void CreateActions();
@@ -90,10 +84,47 @@ private:
     void EnableMovingPorts(bool Enable);
     bool IsMovingPortsEnabled() {return (m_ComponentMovingPorts != NULL);}
 
+    // Update Menu and Toolbar Controls
+    void UpdateMenuAndToolbars();
+
+    // Copy Paste Support
+    void ClearCopyPasteBuffer();
+
+    // Print Support
+    void PrintStandardSetup(QPrinter& Printer, QPainter& Painter);
+    void PrintWiringWindow(QPrinter& Printer, QPainter& Painter, int& PageNum);
+    void PrintComponentParameters(QPrinter& Printer, QPainter& Painter, int& PageNum);
+    void PrintStartNewPage(QPrinter& Printer, QPainter& Painter, int& PageNum);
+    void PrintPageHeader(QPrinter& Printer, QPainter& Painter, int PageNum);
+
+    // PointerToolsButtonGroup Support
+    void TurnOffAllPointerToolButtons();
+    void TurnOnAPointerToolButton(int id);
+    void ClickPointToolButton(int id);
+
+    // Tab Page Handling
+    int GetPageIndexFromName(QString PageName);
+    bool IsPageNameRedundant(QString PageName);
+    QString GetPageNameFromUser(bool NewTabFlag, QString DefaultText = "");  // NewTabFlag = 1 for New Tab, 0 for Renaming Tab
+    void UpdatePageTabUIInformation();
+    int CreateNewSceneViewAndPutIntoLists(); // returns index of lists
+    void DeletePageSceneView(int PageIndex);
+
+signals:
+    void PerformPreprocessingCommonActions();
+    void PreferenceChangedAutoDeleteTooShortWire(bool NewValue);
+
 private slots:
+    // Global Handler for all Actions
+    void HandlePreprocessingCommonActionsTriggered();
+
+    // Handlers for Tabbed Window Events
+    void HandleTabWindowEventTabChanged(int);
+    void HandleTabWindowEventTabCloseRequested(int);
+
     // Handlers User Actions From Component, Properties or SceneView Windows
-    void UserActionComponentToolboxButtonPressed(SSTInfoDataComponent* ptrComponent);
-    void UserActionPointerGroupClicked(int id);
+    void ToolboxWindowActionComponentItemPressed(SSTInfoDataComponent* ptrComponent);
+    void ToolButtonGroupActionPointerGroupClicked(int id);
 
     // Handlers for events from the Graphics Scene
     void HandleSceneEventComponentAdded(GraphicItemComponent*);
@@ -109,48 +140,60 @@ private slots:
     void HandleSceneEventDragAndDropFinished();
     void HandleUndoStackCleanChanged(bool NewState);
 
-    // Handlers for User Actions From Menus or Toolbars
-    void UserActionHandlerBringToFront();
-    void UserActionHandlerSendToBack();
-    void UserActionHandlerDeleteItem();
+    // Handlers for User Actions From Menus and/or Toolbars
+    void MenuActionHandlerBringToFront();
+    void MenuActionHandlerSendToBack();
+    void MenuActionHandlerDeleteItem();
 
-    void UserActionHandlerSelectAll();
+    // Select All
+    void MenuActionHandlerSelectAll();
 
-    void UserActionHandlerCut();
-    void UserActionHandlerCopy();
-    void UserActionHandlerPaste();
+    // Cut / Copy / Paste
+    void MenuActionHandlerCut();
+    void MenuActionHandlerCopy();
+    void MenuActionHandlerPaste();
 
-    void UserActionHandlerNewProject();
-    void UserActionHandlerLoadDesign();
-    void UserActionHandlerSaveDesign();
-    void UserActionHandlerSaveAs();
-    void UserActionHandlerImportSSTInfo();
-    void UserActionHandlerExportSSTInputDeck();
-    void UserActionHandlerPreferences();
-    void UserActionHandlerAbout();
-    void UserActionHandlerPrint();
-    void UserActionHandlerExit();
-    void UserActionHandlerShowToolbars();
+    // Misc Handlers
+    void MenuActionHandlerNewProject();
+    void MenuActionHandlerLoadDesign();
+    void MenuActionHandlerSaveDesign();
+    void MenuActionHandlerSaveAs();
+    void MenuActionHandlerImportSSTInfo();
+    void MenuActionHandlerExportSSTInputDeck();
+    void MenuActionHandlerPreferences();
+    void MenuActionHandlerAbout();
+    void MenuActionHandlerPrint();
+    void MenuActionHandlerExit();
+    void MenuActionHandlerShowToolbars();
 
-    void UserActionFontSelectChanged(const QString& font);
-    void UserActionFontSizeChanged(const QString& size);
-    void UserActionHandlerFontChange();
+    // Font Handling
+    void ToolbarActionFontSelectChanged(const QString& font);
+    void ToolbarActionFontSizeChanged(const QString& size);
+    void ToolbarActionHandlerFontChange();
 
-    void UserActionSceneScaleChanged(const QString& NewScaleText);
-    void UserActionSceneScaleZoomIn();
-    void UserActionSceneScaleZoomOut();
-    void UserActionSceneScaleZoomAll();
+    // Page (tabs) Handling
+    void MenuActionPageOpen();
+    void MenuActionPageClose(int TabIndex = -1);
+    void MenuActionPageRename(QString ProvidedPageName = "");
+    void MenuActionPageNew(QString ProvidedPageName = "");
+    void MenuActionPageDelete(int TabIndex = -1);
 
-    void UserActionHandlerMovePorts();
-    void UserActionHandlerSetDynamicPorts();
-    void UserActionHandlerManageModules();
+    // Zoom and Scale Handlers
+    void ToolbarActionSceneScaleChanged(const QString& NewScaleText);
+    void MenuActionSceneScaleZoomIn();
+    void MenuActionSceneScaleZoomOut();
+    void MenuActionSceneScaleZoomAll();
 
-    void UserActionTextColorButtonTriggered();
-    void UserActionComponentFillColorButtonTriggered();
-    void UserActionTextColorChanged();
-    void UserActionComponentFillColorChanged();
+    // Component Menu Handlers
+    void MenuActionHandlerMovePorts();
+    void MenuActionHandlerSetDynamicPorts();
+    void MenuActionHandlerManageModules();
 
-    void ClearCopyPasteBuffer();
+    // Handlers for Colors of Text and Component Background
+    void ToolbarActionTextColorButtonTriggered();
+    void ToolbarActionComponentFillColorButtonTriggered();
+    void ToolbarActionTextColorChanged();
+    void ToolbarActionComponentFillColorChanged();
 
 private:
     void closeEvent(QCloseEvent* event);
@@ -158,25 +201,32 @@ private:
 
 private:
     // The Scene, View, Component, Property, Dialogs & Support Windows
-    WiringScene*            m_WiringScene;
-    QGraphicsView*          m_WiringView;
+    QSplitter*              m_MainSplitterWidget;
+    QTabWidget*             m_TabWiringWindow;
+
+    QStringList             m_PageNamesList;
+    QList<WiringScene*>     m_WiringScenesList;
+    QList<WiringView*>      m_WiringViewsList;
+    WiringScene*            m_CurrentWiringScene;
+    WiringView*             m_CurrentWiringView;
+
     WindowComponentToolBox* m_CompToolBox;
     WindowItemProperties*   m_PropWin;
     DialogPortsConfig*      m_ConfigurePortsDialog;
     DialogManageModules*    m_ManageModulesDialog;
     DialogPreferences*      m_PreferencesDialog;
-    QSplitter*              m_MainSplitterWidget;
-    QTabWidget*             m_TabWiringWindow;
 
     // Undo / Redo Processing
     QUndoStack*             m_UndoStack;
-//  QUndoView*              m_UndoViewWindow;
+QUndoView*              m_UndoViewWindow;
 
     // Menus for the Main Window
     QMenu*                  m_FileMenu;
     QMenu*                  m_EditMenu;
     QMenu*                  m_GenericItemMenu;
     QMenu*                  m_ViewMenu;
+    QMenu*                  m_PageMenu;
+    QMenu*                  m_PageOpenMenu;
     QMenu*                  m_ToolbarMenu;
     QMenu*                  m_AboutMenu;
 
@@ -193,7 +243,7 @@ private:
     QComboBox*              m_FontSizeCombo;
     QToolButton*            m_FontColorToolButton;
     QToolButton*            m_ComponentFillColorToolButton;
-    QButtonGroup*           m_PointerTypeGroup;
+    QButtonGroup*           m_ToolsButtonGroup;
     QComboBox*              m_SceneScaleCombo;
 
     // All of the Various Actions that the user can take
@@ -237,6 +287,12 @@ private:
     QAction*                m_ShowFontControlToolbarAction;
     QAction*                m_ShowViewControlToolbarAction;
 
+    QAction*                m_PageOpen;
+    QAction*                m_PageClose;
+    QAction*                m_PageRename;
+    QAction*                m_PageNew;
+    QAction*                m_PageDelete;
+
     QAction*                m_SceneScaleZoomInAction;
     QAction*                m_SceneScaleZoomOutAction;
     QAction*                m_SceneScaleZoomAllAction;
@@ -250,7 +306,10 @@ private:
     QSettings*              m_PersistentSettings;
 
     // SSTInfo XML Data File Data (SSTInfo XML Import file)
-    QString                 m_SSTInfoXMLDataFilePathName;
+    QString                 m_LastSavedSSTInfoXMLDataFilePathName;
+
+    // Python Export
+    QString                 m_LastExportedPythonFilePathName;
 
     // Project File Data (Project Open/Save file)
     QString                 m_LastSavedProjectDataFilePathName;
@@ -259,13 +318,6 @@ private:
     QFont                   m_DefaultFont;
     QString                 m_LastFontSizeString;
     QString                 m_LastScaleString;
-
-    // Python Export
-    QString                 m_LastExportedPythonFilePathName;
-
-    // Preferences
-    bool                    m_ReturnToSelectToolAfterPlacingWire;
-    bool                    m_ReturnToSelectToolAfterPlacingText;
 
     // Copy/Paste Support
     QList<QByteArray*>      m_CopyPasteBufferListComps;

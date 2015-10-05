@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
+// Copyright 2009-2014 Sandia Corporation. Under the terms
 // of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2014, Sandia Corporation
 // All rights reserved.
 //
 // This file is part of the SST software package. For license
@@ -85,7 +85,7 @@ void DialogManageModules::PopulateAvailableModulesTable()
             Module = Element->GetModule(y);
             FullModuleName = Element->GetElementName() + "." + Module->GetModuleName();
 
-            // Create a new list item & set its data ptr to the parameter list
+            // Create a new list item & set its data ptr to the Property list
             NewItem = new QListWidgetItem(FullModuleName);
             // Save a Pointer to the Module as part of this list item so we can get it later
             NewItem->setData(Qt::UserRole, VPtr<SSTInfoDataModule>::asQVariant(Module));
@@ -165,7 +165,7 @@ void DialogManageModules::SaveData()
             // For each param of the module, add it to the Component
             for (y = 0; y < ptrModule->GetNumOfParams(); y++) {
                 ptrParam = ptrModule->GetParam(y);
-                m_SelectedComponent->AddModuleParameter(ptrParam->GetParamName(), ptrParam->GetDefaultValue(), ptrParam->GetParamDesc());
+                m_SelectedComponent->AddModuleProperty(ptrParam->GetParamName(), ptrParam->GetDefaultValue(), ptrParam->GetParamDesc());
             }
         }
     }

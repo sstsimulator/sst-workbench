@@ -1,9 +1,9 @@
 ##########################################################################
-## Copyright 2009-2015 Sandia Corporation. Under the terms
+## Copyright 2009-2014 Sandia Corporation. Under the terms
 ## of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
 ## Government retains certain rights in this software.
 ##
-## Copyright (c) 2009-2015, Sandia Corporation
+## Copyright (c) 2009-2014, Sandia Corporation
 ## All rights reserved.
 ##
 ## This file is part of the SST software package. For license
@@ -61,12 +61,17 @@ PRECOMPILED_HEADER = GlobalIncludes.h
 SOURCES += \
     Main.cpp \
     MainWindow.cpp \
+    MainWindow_UI_Handling.cpp \
+    MainWindow_Print_Handling.cpp \
+    MainWindow_Page_Handling.cpp \
     DialogPortsConfig.cpp \
-    DialogParametersConfig.cpp \
     DialogExportDisplayStatus.cpp \
     DialogPreferences.cpp \
+    DialogDynamicPropertiesConfig.cpp \
     DialogManageModules.cpp \
+    DialogAddEditProperty.cpp \
     WiringScene.cpp \
+    WiringView.cpp \
     WindowItemProperties.cpp \
     WindowComponentToolbox.cpp \
     SSTInfoData.cpp \
@@ -89,11 +94,13 @@ HEADERS += \
     GlobalIncludes.h \
     MainWindow.h \
     DialogPortsConfig.h \
-    DialogParametersConfig.h \
     DialogExportDisplayStatus.h \
     DialogPreferences.h \
+    DialogDynamicPropertiesConfig.h \
     DialogManageModules.h \
+    DialogAddEditProperty.h \
     WiringScene.h \
+    WiringView.h \
     WindowItemProperties.h \
     WindowComponentToolbox.h \
     SSTInfoData.h \
@@ -118,8 +125,9 @@ FORMS += \
     DialogPortsConfig.ui \
     DialogExportDisplayStatus.ui \
     DialogPreferences.ui \
-    DialogParametersConfig.ui \
-    DialogManageModules.ui
+    DialogManageModules.ui \
+    DialogDynamicPropertiesConfig.ui \
+    DialogAddEditProperty.ui
 
 OTHER_FILES += \
     build_linux_release.sh \
