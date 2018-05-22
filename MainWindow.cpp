@@ -1,10 +1,14 @@
 ////////////////////////////////////////////////////////////////////////
-// Copyright 2009-2015 Sandia Corporation. Under the terms
-// of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S.
+// Copyright 2009-2018 NTESS. Under the terms
+// of Contract DE-NA0003525 with NTESS, the U.S.
 // Government retains certain rights in this software.
 //
-// Copyright (c) 2009-2015, Sandia Corporation
+// Copyright (c) 2009-2018, NTESS
 // All rights reserved.
+//
+// Portions are copyright of other developers:
+// See the file CONTRIBUTORS.TXT in the top level directory
+// the distribution for more information.
 //
 // This file is part of the SST software package. For license
 // information, see the LICENSE file in the top level directory of the
@@ -1703,10 +1707,10 @@ void MainWindow::UserActionHandlerAbout()
     AboutText += "Built With Qt Version %2<br>";
     AboutText += "Using Qt Runtime Libraries %3<br><br>";
 
-    AboutText += "Copyright (c) 2009-2015<br>Sandia Corporation.  ";
-    AboutText += "Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, ";
+    AboutText += "Copyright (c) 2009-2018<br>NTESS.  ";
+    AboutText += "Under the terms of Contract DE-NA0003525 with NTESS, ";
     AboutText += "the U.S. Government retains certain rights in this software.<br><br>";
-    AboutText += "Copyright (c) 2009-2015,<br>Sandia Corporation<br>All rights reserved.<br><br>";
+    AboutText += "Copyright (c) 2009-2018,<br>NTESS<br>All rights reserved.<br><br>";
 
     AboutText += "<img src=:/images/SSTLogo.png><br>";
 
